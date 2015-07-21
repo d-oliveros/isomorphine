@@ -22,27 +22,12 @@
     "space-infix-ops": 0
   },
   "env": {
-    "browser": 1,
     "node": 1,
     "mocha": 1,
     "es6": 1
   },
   "globals": {
     "expect": 0,
-    "chai": 0,
-    "requireIndex": 0,
-    "requireCore": 0,
-    "window": 0,
-    "document": 0,
-    "__root": 0,
-    "__config": 0,
-    "__log": 0,
-    "_error": 0
-  },
-  "ecmaFeatures": {
-    "jsx": 1
-  },
-  "plugins": [
-    "react"
-  ]
+    "chai": 0
+  }
 }

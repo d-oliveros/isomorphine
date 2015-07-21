@@ -1,14 +1,15 @@
-import invariant from 'invariant';
-import proxyHandler from './proxyHandler';
+import proxy from './proxy';
 
 let entities = {};
 
-export default function isomorphic(name, entity) {
-  if (process.browser) {
-    return new Proxy({}, proxyHandler);
+export default function isomorphic(name, entity, options={}) {
+  if (process.browser || options.browser) {
+    return proxy(name);
   }
 
-  invariant(!entities[name], `Entity ${name} was registered twice.`);
+  if (entities[name]) {
+    throw new Error(`Entity ${name} was registered twice.`);
+  }
 
   // Register this entity
   entities[name] = entity;
@@ -17,3 +18,4 @@ export default function isomorphic(name, entity) {
 }
 
 isomorphic.getEntity = (name) => entities[name] || null;
+isomorphic.removeEntity = (name) => delete entities[name];
