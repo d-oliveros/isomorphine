@@ -1,22 +1,12 @@
+import request from 'supertest';
 import isomorphic from '../src/isomorphic';
 import api from '../src/api';
-import request from 'supertest';
+import entityMock from './mocks/entityMock';
 
 describe('API', () => {
-  let Entity = {
-    doSomething() {
-      return 'did something.';
-    },
-    doSomethingAsync(firstParam, secondParam, callback) {
-      setTimeout(() => {
-        callback(null, 'Sweet', { nested: { thing: ['true', 'dat'] }});
-      }, 300);
-    }
-  };
-
   before(() => {
     isomorphic.removeEntity('Entity');
-    Entity = isomorphic('Entity', Entity);
+    isomorphic('Entity', entityMock);
   });
 
   it('should call a server-side entity and return OK', (done) => {
