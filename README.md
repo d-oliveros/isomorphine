@@ -1,1 +1,6 @@
-# isomorphic-model
+# Morphic
+
+### Installation
+```bash
+npm install morphic
+```

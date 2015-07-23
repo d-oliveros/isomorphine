@@ -1,6 +1,6 @@
 {
   "name": "morphic",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Isomorphic object wrapper for node.js and the web",
   "main": "index.js",
   "scripts": {
