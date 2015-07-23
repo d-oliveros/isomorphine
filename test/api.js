@@ -1,5 +1,5 @@
 import request from 'supertest';
-import isomorphic from '../src/isomorphic';
+import isomorphic from '../src/morphic';
 import api from '../src/api';
 import entityMock from './mocks/entityMock';
 
@@ -14,7 +14,7 @@ describe('API', () => {
       .get('/Entity/doSomething')
       .expect(200)
       .expect('Content-Type', /json/)
-      .expect(['Ok'])
+      .expect({ values: ['Ok'] })
       .end(done);
   });
 
@@ -23,7 +23,8 @@ describe('API', () => {
       .post('/Entity/doSomethingAsync')
       .send({ args: ['oneParam', 'anotherParam', '__clientCallback__'] })
       .expect(200)
-      .expect(['Sweet', { nested: { thing: ['true', 'dat'] }} ])
+      .expect('Content-Type', /json/)
+      .expect({ values: ['Sweet', { nested: { thing: ['true', 'dat'] }}]})
       .end(done);
   });
 });

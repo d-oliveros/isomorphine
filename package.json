@@ -1,7 +1,7 @@
 {
-  "name": "isomorphic-model",
-  "version": "0.0.2",
-  "description": "Isomorphic object modeling wrapper for node.js and the web",
+  "name": "morphic",
+  "version": "0.0.3",
+  "description": "Isomorphic object wrapper for node.js and the web",
   "main": "index.js",
   "scripts": {
     "test": "node node_modules/.bin/mocha --harmony-proxies"
@@ -12,6 +12,7 @@
   },
   "keywords": [
     "isomorphic",
+    "morphic",
     "model",
     "database",
     "react"
@@ -25,8 +26,10 @@
   "dependencies": {
     "babel": "^5.6.23",
     "body-parser": "^1.13.2",
+    "debug": "^2.2.0",
     "express": "^4.13.1",
     "harmony-reflect": "^1.4.0",
+    "invariant": "^2.1.0",
     "request": "^2.60.0"
   },
   "devDependencies": {

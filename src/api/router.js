@@ -1,12 +1,17 @@
 import {Router} from 'express';
-import isomorphic from '../isomorphic';
+import isomorphic from '../morphic';
 
+let debug = require('debug')('morphic:router');
 let router = Router();
 
 router.all('/:entity/:method', formatArgs, serveRequest);
 
 router.param('entity', (req, res, next, id) => {
+  debug(`Looking for isomorphic entity: ${id}`);
+
   let method = req.params.method;
+
+  req.entityId = id;
   req.entity = isomorphic.getEntity(id);
 
   if (!req.entity) {
@@ -33,23 +38,30 @@ function formatArgs(req, res, next) {
 
     req.async = true;
 
-    return (err, ...body) => {
+    return (err, ...values) => {
       if (err) return next(err);
-      res.json(body || []);
+
+      debug(`Callback function called. Values are:`, values);
+
+      res.json({ values });
     };
   });
+
+  debug(`Request is async? ${req.async}. Arguments are:`, req.args);
 
   next();
 }
 
 function serveRequest(req, res) {
-  let {params, args} = req;
+  let {params, args, entityId} = req;
   let {method} = params;
+
+  debug(`Calling ${entityId}.${method}() with arguments:`, args);
 
   req.entity[method](...args);
 
   if (!req.async) {
-    res.json(['Ok']);
+    res.json({ values: ['Ok'] });
   }
 }
 
