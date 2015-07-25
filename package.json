@@ -1,5 +1,5 @@
 {
-  "name": "morphic",
+  "name": "isomorphine",
   "version": "0.2.0",
   "description": "Isomorphic object wrapper for node.js and the web",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/d-oliveros/isomorphic-model.git"
+    "url": "git+https://github.com/d-oliveros/isomorphine.git"
   },
   "keywords": [
     "isomorphic",
@@ -20,9 +20,9 @@
   "author": "David Oliveros",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/d-oliveros/isomorphic-model/issues"
+    "url": "https://github.com/d-oliveros/isomorphine/issues"
   },
-  "homepage": "https://github.com/d-oliveros/isomorphic-model#readme",
+  "homepage": "https://github.com/d-oliveros/isomorphine#readme",
   "dependencies": {
     "body-parser": "^1.13.2",
     "debug": "^2.2.0",
