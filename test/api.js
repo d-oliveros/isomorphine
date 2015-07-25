@@ -11,7 +11,7 @@ describe('API', function() {
 
   it('should call a server-side entity and return OK', function(done) {
     request(api)
-      .get('/Entity/doSomething')
+      .get('/isomorphine/Entity/doSomething')
       .expect(200)
       .expect('Content-Type', /json/)
       .expect({ values: ['Ok'] })
@@ -20,7 +20,7 @@ describe('API', function() {
 
   it('should call a server-side entity and return nested results', function(done) {
     request(api)
-      .post('/Entity/doSomethingAsync')
+      .post('/isomorphine/Entity/doSomethingAsync')
       .send({ payload: ['oneParam', 'anotherParam', '__clientCallback__'] })
       .expect(200)
       .expect('Content-Type', /json/)

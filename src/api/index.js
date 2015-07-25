@@ -8,6 +8,6 @@ api.use(bodyParser.json());
 
 api.param('entity', ctrls.entityLoader);
 
-api.all('/:entity/:method', ctrls.getPayload, ctrls.serveRequest);
+api.all('/isomorphine/:entity/:method', ctrls.getPayload, ctrls.serveRequest);
 
 module.exports = api;

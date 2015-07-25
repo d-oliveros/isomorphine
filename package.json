@@ -1,6 +1,6 @@
 {
   "name": "isomorphine",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Isomorphic object wrapper for node.js and the web",
   "main": "index.js",
   "scripts": {

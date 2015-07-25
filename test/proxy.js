@@ -17,7 +17,7 @@ describe('Client proxy', function() {
 
     // We'll be testing the browser proxy as well, so we need to create a
     // entity as if we were in the browser's context.
-    Entity = isomorphine.createProxy('Entity', entityMock);
+    Entity = new (isomorphine.Proxy)('Entity', entityMock);
 
     server = api.listen(8888, done);
   });

@@ -3,16 +3,12 @@ var request = require('request');
 var debug = require('debug')('isomorphine:proxy');
 var util = require('./util');
 
-module.exports = function proxyFactory(name, entity) {
-  var proxy = {};
-
+module.exports = function Proxy(name, entity) {
   debug('Creating a new proxy: ' + name);
 
   for (var method in entity) {
-    proxy[method] = proxyDispatcher.bind(this, name, method);
+    this[method] = proxyDispatcher.bind(this, name, method);
   }
-
-  return proxy;
 };
 
 function proxyDispatcher(entityName, method) {

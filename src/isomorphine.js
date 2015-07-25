@@ -1,7 +1,7 @@
 var util = require('./util');
 
 module.exports = {
-  createProxy: require('./proxy'),
+  Proxy: require('./proxy'),
   api: require('./api'),
   config: util.loadConfig,
   loadEntities: util.loadEntities,

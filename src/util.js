@@ -62,7 +62,7 @@ function buildEndpoint(name, method) {
   var host = config.host;
   var port = config.port;
 
-  return protocol + '://' + host + ':' + port + '/' + name + '/' + method;
+  return protocol + '://' + host + ':' + port + '/isomorphine/' + name + '/' + method;
 }
 
 /**
