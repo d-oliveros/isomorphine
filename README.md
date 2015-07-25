@@ -1,6 +1,6 @@
-# Morphic
+# Isomorphine
 
 ### Installation
 ```bash
-npm install morphic
+npm install isomorphine
 ```
