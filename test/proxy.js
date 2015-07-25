@@ -1,36 +1,38 @@
-import {expect} from 'chai';
-import isomorphic from '../src/morphic';
-import api from '../src/api';
-import entityMock from './mocks/entityMock';
+var expect = require('chai').expect;
+var isomorphine = require('../src/isomorphine');
+var api = require('../src/api');
+var entityMock = require('./mocks/entityMock');
 
-describe('Client proxy', () => {
-  let Entity;
+describe('Client proxy', function() {
+  var Entity, server, previousConf;
 
-  before((done) => {
-    process.env.ISOMORPHIC_API_PORT = '8888';
-    isomorphic.removeEntity('Entity');
+  before(function(done) {
+    previousConf = isomorphine.config();
+    isomorphine.config({ port: '8888' });
 
-    // Registers the isomorphic entity.
-    isomorphic('Entity', entityMock);
+    isomorphine.resetEntities();
+
+    // Registers the isomorphine entity.
+    isomorphine.registerEntity('Entity', entityMock);
 
     // We'll be testing the browser proxy as well, so we need to create a
     // entity as if we were in the browser's context.
-    Entity = isomorphic('Entity', entityMock, { browser: true });
+    Entity = isomorphine.createProxy('Entity', entityMock);
 
-    api.listen(8888, done);
+    server = api.listen(8888, done);
   });
 
-  it('should proxy properties', () => {
-    expect(Entity.doSomething).to.be.a('function');
-    expect(Entity.whatever).to.be.a('function');
-  });
-
-  it('should proxy an entity method through the rest API', (done) => {
-    Entity.doSomethingAsync('something', { another: 'thing' }, (err, firstRes, secondRes) => {
+  it('should proxy an entity method through the rest API', function(done) {
+    Entity.doSomethingAsync('something', { another: 'thing' }, function(err, firstRes, secondRes) {
       if (err) return done(err);
       expect(firstRes).to.equal('Sweet');
       expect(secondRes).to.deep.equal({ nested: { thing: ['true', 'dat'] }});
       done();
     });
+  });
+
+  after(function(done) {
+    isomorphine.config(previousConf);
+    server.close(done);
   });
 });

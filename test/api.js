@@ -1,15 +1,15 @@
-import request from 'supertest';
-import isomorphic from '../src/morphic';
-import api from '../src/api';
-import entityMock from './mocks/entityMock';
+var request = require('supertest');
+var isomorphine = require('../src/isomorphine');
+var api = require('../src/api');
+var entityMock = require('./mocks/entityMock');
 
-describe('API', () => {
-  before(() => {
-    isomorphic.removeEntity('Entity');
-    isomorphic('Entity', entityMock);
+describe('API', function() {
+  before(function() {
+    isomorphine.resetEntities();
+    isomorphine.registerEntity('Entity', entityMock);
   });
 
-  it('should call a server-side entity and return OK', (done) => {
+  it('should call a server-side entity and return OK', function(done) {
     request(api)
       .get('/Entity/doSomething')
       .expect(200)
@@ -18,10 +18,10 @@ describe('API', () => {
       .end(done);
   });
 
-  it('should call a server-side entity and return nested results', (done) => {
+  it('should call a server-side entity and return nested results', function(done) {
     request(api)
       .post('/Entity/doSomethingAsync')
-      .send({ args: ['oneParam', 'anotherParam', '__clientCallback__'] })
+      .send({ payload: ['oneParam', 'anotherParam', '__clientCallback__'] })
       .expect(200)
       .expect('Content-Type', /json/)
       .expect({ values: ['Sweet', { nested: { thing: ['true', 'dat'] }}]})

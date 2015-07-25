@@ -1,15 +1,13 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import router from './router';
+var express = require('express');
+var bodyParser = require('body-parser');
+var ctrls = require('./controllers');
 
-let api = express();
+var api = express();
+
 api.use(bodyParser.json());
-api.use(router);
-api.use(errorHandler);
 
-export default api;
+api.param('entity', ctrls.entityLoader);
 
-function errorHandler(err, req, res, next) {
-  console.error(err.stack);
-  res.status(err.status || 500).send(err.message);
-}
+api.all('/:entity/:method', ctrls.getPayload, ctrls.serveRequest);
+
+module.exports = api;

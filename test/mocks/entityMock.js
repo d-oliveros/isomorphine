@@ -1,10 +1,10 @@
 
-export default {
-  doSomething() {
+module.exports = {
+  doSomething: function() {
     return 'did something.';
   },
-  doSomethingAsync(firstParam, secondParam, callback) {
-    setTimeout(() => {
+  doSomethingAsync: function(firstParam, secondParam, callback) {
+    setTimeout(function() {
       callback(null, 'Sweet', { nested: { thing: ['true', 'dat'] }});
     }, 300);
   }

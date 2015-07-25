@@ -1,69 +1,72 @@
-import invariant from 'invariant';
+var invariant = require('invariant');
+var request = require('request');
+var debug = require('debug')('isomorphine:proxy');
+var util = require('./util');
 
-let request = require('request').defaults({ json: true });
-let debug = require('debug')('morphic:proxy');
+module.exports = function proxyFactory(name, entity) {
+  var proxy = {};
 
-export default function createProxy(name) {
-  debug(`Creating a new proxy: ${name}`);
+  debug('Creating a new proxy: ' + name);
 
-  return new Proxy({}, {
-    get(target, method) {
-      debug(`Accessing property ${method} of ${name}`);
+  for (var method in entity) {
+    proxy[method] = proxyDispatcher.bind(this, name, method);
+  }
 
-      return (...args) => {
-        invariant(method, 'Method is required.');
+  return proxy;
+};
 
-        const port = process.env.ISOMORPHIC_API_PORT || '80';
-        const host = process.env.ISOMORPHIC_API_HOST || 'localhost';
-        const endpoint = `http://${host}:${port}/${name}/${method}`;
+function proxyDispatcher(entityName, method) {
+  invariant(method, 'Method is required.');
 
-        let callback = transformCallback(args);
+  // Get the arguments that should be passed to the server
+  var payload = Array.prototype.slice.call(arguments).slice(2);
 
-        debug(`Calling API endpoint: ${endpoint}.`);
+  // Save the callback function for later use
+  var callback = util.firstFunction(payload);
 
-        request.post(endpoint, { body: { args }}, (err, res, { values }) => {
-          if (err) {
-            debug(`API request failed.`, err);
-            console.error(err);
-            // @todo handle errors better
-            if (callback) {
-              callback(err);
-            }
-            return;
-          }
+  // Transform the callback function in the arguments into a special key
+  // that will be used in the server to signal the client-side callback call
+  payload = util.transformCallback(payload);
 
-          if (!values || values.constructor !== Array) {
-            let error = new Error(`Data returned from server is not an array.`);
-            return callback(error);
-          }
+  var endpoint = util.buildEndpoint(entityName, method);
 
-          debug(`Resolving callback with ${JSON.stringify(values)}`);
+  debug('Calling API endpoint: ' + endpoint + '.');
 
-          callback(null, ...values);
-        });
-      };
-    }
+  var reqOptions = {
+    uri: endpoint,
+    method: 'post',
+    json: true,
+    body: { payload: payload }
+  };
+
+  request(reqOptions, function(err, res, data) {
+    handleResponse(err, data, callback);
   });
 }
 
-/**
- * Transforms the client's callback function, to a callback notice string,
- *
- * @param  {Array}     args  Array of arguments to transform.
- * @return {Function}        The original callback function.
- */
-function transformCallback(args) {
-  let callback;
+function handleResponse(err, data, callback) {
+  callback = callback || util.emptyFunction;
 
-  args.forEach((arg, i) => {
-    if (typeof arg !== 'function') return;
+  if (err) {
+    debug('API request failed.', err);
+    console.error(err);
+    // @todo handle errors better
+    if (callback) {
+      callback(err);
+    }
+    return;
+  }
 
-    // There shouldn't be an argument after the callback function
-    invariant(args.length === (i+1), `Callback function should be the last argument.`);
+  var values = data.values;
 
-    callback = args[i];
-    args[i] =  '__clientCallback__';
-  });
+  if (!values || values.constructor !== Array) {
+    return callback(new Error('Fetched payload is not an array.'));
+  }
 
-  return callback;
+  debug('Resolving callback with ' + JSON.stringify(values, null, 3));
+
+  // Sets the error argument
+  values.unshift(null);
+
+  callback.apply(this, values);
 }
