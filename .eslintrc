@@ -1,5 +1,4 @@
 {
-  "parser": "babel-eslint",
   "rules": {
     "quotes": [2, "single"],
     "strict": [2, "never"],
@@ -23,11 +22,6 @@
   },
   "env": {
     "node": 1,
-    "mocha": 1,
-    "es6": 1
-  },
-  "globals": {
-    "expect": 0,
-    "chai": 0
+    "mocha": 1
   }
 }

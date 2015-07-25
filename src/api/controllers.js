@@ -1,4 +1,4 @@
-var entities = require('../entities');
+var entities = require('../stores/entities');
 var debug = require('debug')('isomorphine:controllers');
 
 exports.entityLoader = entityLoader;

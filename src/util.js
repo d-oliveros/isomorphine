@@ -1,6 +1,6 @@
 var invariant = require('invariant');
-var entities = require('./entities');
-var config = require('./config');
+var entities = require('./stores/entities');
+var config = require('../config');
 
 exports.transformCallback = transformCallback;
 exports.firstFunction = firstFunction;
@@ -66,25 +66,25 @@ function buildEndpoint(name, method) {
 }
 
 /**
- * Requires every module in each folder of "dirname".
+ * Requires every module in each folder of "rootDir".
  *
- * @param  {String}  dirname  Path to folder to require from.
+ * @param  {String}  rootDir  Path to folder to require from.
  * @return {Object}           Required modules.
  */
-function loadEntities(dirname) {
+function loadEntities(rootDir) {
   if (process.browser) return;
 
-  invariant(dirname, 'dirname is required.');
+  invariant(rootDir, 'Root directory is required.');
   var fs = require('fs');
   var path = require('path');
 
   var modules = {};
-  var files = fs.readdirSync(dirname);
+  var files = fs.readdirSync(rootDir);
 
   files.forEach(function(file) {
     if (file.indexOf('.js') < 0) {
       registerEntity(file, modules[file]);
-      modules[file] = require(path.join(dirname, file));
+      modules[file] = require(path.join(rootDir, file));
     }
   });
 
