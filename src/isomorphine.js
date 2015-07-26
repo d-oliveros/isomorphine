@@ -5,7 +5,6 @@ module.exports = {
   router: require('./router'),
 
   config:          util.loadConfig,
-  requireOnServer: util.requireOnServer,
   loadEntities:    util.loadEntities,
   registerEntity:  util.registerEntity,
   resetEntities:   util.resetEntities
