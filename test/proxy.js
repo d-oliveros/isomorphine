@@ -1,10 +1,11 @@
 var expect = require('chai').expect;
 var isomorphine = require('../src/isomorphine');
-var api = require('../src/api');
-var entityMock = require('./mocks/entityMock');
+var createApi = require('./util/create-api');
+var entityMock = require('./mocks/entity');
 
 describe('Client proxy', function() {
   var Entity, server, previousConf;
+  var api = createApi();
 
   before(function(done) {
     previousConf = isomorphine.config();
@@ -17,7 +18,7 @@ describe('Client proxy', function() {
 
     // We'll be testing the browser proxy as well, so we need to create a
     // entity as if we were in the browser's context.
-    Entity = new (isomorphine.Proxy)('Entity', entityMock);
+    Entity = isomorphine.Proxy('Entity', entityMock);
 
     server = api.listen(8888, done);
   });

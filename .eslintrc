@@ -17,11 +17,15 @@
     "no-alert": 0,
     "new-cap": 0,
     "comma-spacing": 0,
+    "no-path-concat": 0,
     "yoda": 0,
     "space-infix-ops": 0
   },
   "env": {
     "node": 1,
     "mocha": 1
+  },
+  "globals": {
+    "window": 0
   }
 }

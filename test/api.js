@@ -1,9 +1,11 @@
 var request = require('supertest');
-var isomorphine = require('../src/isomorphine');
-var api = require('../src/api');
-var entityMock = require('./mocks/entityMock');
+var isomorphine = require('../index');
+var createApi = require('./util/create-api');
+var entityMock = require('./mocks/entity');
 
 describe('API', function() {
+  var api = createApi();
+
   before(function() {
     isomorphine.resetEntities();
     isomorphine.registerEntity('Entity', entityMock);

@@ -1,9 +1,20 @@
-var invariant = require('invariant');
 var request = require('request');
 var debug = require('debug')('isomorphine:proxy');
 var util = require('./util');
 
+var invariant = util.invariant;
+
+/**
+ * Creates a new Proxy.
+ *
+ * @param  {String}  name    The name of this entity.
+ * @param  {Object}  entity  The entity map to be used.
+ *
+ * @return {Object}          Instance of `Proxy`
+ */
 module.exports = function Proxy(name, entity) {
+  if (!(this instanceof Proxy)) return new Proxy(name, entity);
+
   debug('Creating a new proxy: ' + name);
 
   for (var method in entity) {
