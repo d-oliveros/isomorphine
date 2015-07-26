@@ -1,4 +1,4 @@
-var request = require('request');
+var request = require('superagent');
 var debug = require('debug')('isomorphine:proxy');
 var util = require('./util');
 
@@ -39,16 +39,13 @@ function proxyDispatcher(entityName, method) {
 
   debug('Calling API endpoint: ' + endpoint + '.');
 
-  var reqOptions = {
-    uri: endpoint,
-    method: 'post',
-    json: true,
-    body: { payload: payload }
-  };
-
-  request(reqOptions, function(err, res, data) {
-    handleResponse(err, data, callback);
-  });
+  request
+    .post(endpoint)
+    .send({ payload: payload })
+    .set('Accept', 'application/json')
+    .end(function(err, res) {
+      handleResponse(err, res.body, callback);
+    });
 }
 
 function handleResponse(err, data, callback) {
