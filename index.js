@@ -8,7 +8,7 @@ exports = module.exports = require('./lib/webpack-loader');
 /**
  * API surface area
  */
-exports.api              = require('./lib/api');
+exports.inject           = require('./lib/injector');
 exports.Proxy            = require('./lib/proxy');
 exports.router           = require('./lib/router');
 exports.config           = util.config;

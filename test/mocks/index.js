@@ -1,3 +1,3 @@
 var isomorphine = require('../../index');
 
-module.exports = isomorphine.api(__dirname);
+module.exports = isomorphine.inject(__dirname);

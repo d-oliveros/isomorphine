@@ -11,7 +11,7 @@ describe('Serverside', function() {
     it('should load all the modules in a folder', function() {
       var apiRoot = path.resolve(__dirname, 'mocks');
 
-      var api = isomorphine.api(apiRoot);
+      var api = isomorphine.inject(apiRoot);
 
       expect(api).to.be.an('object');
       expect(Object.keys(api).length).to.equal(2);

@@ -2,5 +2,5 @@
 /**
  * Browser's API surface area
  */
-exports.api   = require('./lib/api-browser');
+exports.inject   = require('./lib/injector-browser');
 exports.Proxy = require('./lib/proxy');

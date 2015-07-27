@@ -20,13 +20,13 @@ describe('Webpack Loader', function() {
   });
 
   it('should correctly transform a file', function() {
-    expect(source.indexOf('isomorphine.api(__dirname)')).to.be.gt(-1);
+    expect(source.indexOf('isomorphine.inject(__dirname)')).to.be.gt(-1);
 
     var result = loader.call(webpackContext, source);
 
     expect(result).to.be.a('string');
-    expect(result.indexOf('isomorphine.api(__dirname)')).to.be.lt(0);
-    expect(result.indexOf('isomorphine.api(null, __entityMap)')).to.be.gt(-1);
+    expect(result.indexOf('isomorphine.inject(__dirname)')).to.be.lt(0);
+    expect(result.indexOf('isomorphine.inject(null, __entityMap)')).to.be.gt(-1);
     expect(result.indexOf('function __isomorphicAPIFactory() {')).to.be.gt(-1);
   });
 });

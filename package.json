@@ -1,6 +1,6 @@
 {
   "name": "isomorphine",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Isomorphic pain medication for node.js and the web",
   "main": "index.js",
   "scripts": {

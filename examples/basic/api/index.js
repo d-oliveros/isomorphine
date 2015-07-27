@@ -1,3 +1,3 @@
 import isomorphine from 'isomorphine';
 
-export default isomorphine.api(__dirname);
+export default isomorphine.inject(__dirname);

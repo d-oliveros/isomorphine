@@ -8,7 +8,7 @@ var mapMock = require('./mocks/map');
 describe('Clientside', function() {
   describe('API', function() {
     it('should map the entity methods to proxy instances', function() {
-      var api = isomorphineBrowser.api(null, mapMock);
+      var api = isomorphineBrowser.inject(null, mapMock);
 
       expect(api.OneEntity.constructor).to.equal(isomorphineBrowser.Proxy);
       expect(api.AnotherEntity.constructor).to.equal(isomorphineBrowser.Proxy);

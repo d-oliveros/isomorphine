@@ -1,4 +1,4 @@
-let db = require('../../server/async-db');
+import db from '../../server/async-db';
 
 export default function createPost(newPost, callback) {
 

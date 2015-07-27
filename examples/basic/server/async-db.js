@@ -7,11 +7,12 @@
 // This is to demostrate that you can require browser-incompatible modules
 // in the API endpoints, without breaking the browser or bloating
 // the bundled file.
-let net = require('net'); // eslint-disable-line
-let fs = require('fs'); // eslint-disable-line
+import net from 'net'; // eslint-disable-line
+import fs from 'fs'; // eslint-disable-line
 
 // Eg.
-// let mongoose = require('mongoose');
+// import mongoose from 'mongoose';
+// export default Model = mongoose.model('Model', modelSchema);
 
 let state = {
   posts: {},
@@ -60,7 +61,6 @@ let models = {
 /**
  * Adds latency to every async callback method in each model.
  */
-/*
 for (let entity in models) {
   for (let method in models[entity]) {
     models[entity][method] = fakeLatency(models[entity][method]);
@@ -72,9 +72,8 @@ function fakeLatency(cb) {
     let args = Array.prototype.slice.call(arguments);
     setTimeout(() => {
       cb.apply(this, args);
-    }, Math.floor(Math.random() * 1000));
+    }, Math.floor(Math.random() * 2000));
   };
 }
-//*/
 
 export default models;
