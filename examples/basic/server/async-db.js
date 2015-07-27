@@ -72,7 +72,7 @@ function fakeLatency(cb) {
     let args = Array.prototype.slice.call(arguments);
     setTimeout(() => {
       cb.apply(this, args);
-    }, Math.floor(Math.random() * 2000));
+    }, Math.floor(Math.random() * 1400));
   };
 }
 

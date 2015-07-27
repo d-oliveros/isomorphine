@@ -61,6 +61,7 @@ export default class App extends React.Component {
     return (
       <div>
         <h1>Isomorphine example.</h1>
+        <input type='button' onClick={ this.createPost.bind(this) } value='Create a new post.'/>
         { !user ? null : <p>User is loaded.</p> }
         { !post
           ? <p>No post loaded yet.</p>
