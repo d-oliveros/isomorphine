@@ -48,5 +48,13 @@ describe('Serverside', function() {
         .expect({ values: ['Sweet', { nested: { thing: ['true', 'dat'] }}]})
         .end(done);
     });
+
+    it('should run the middleware defined in the server-side entity', function(done) {
+      request(api)
+        .post('/isomorphine/Entity/doSomethingAsync')
+        .send({ payload: ['Prohibited value', null, '__clientCallback__'] })
+        .expect(401)
+        .end(done);
+    });
   });
 });
