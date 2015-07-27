@@ -1,13 +1,12 @@
 var util = require('./lib/util');
 
 /**
- * @providesModule isomorphine
+ * API surface area
  */
-module.exports = {
-  api:             require('./lib/api'),
-  Proxy:           require('./lib/proxy'),
-  router:          require('./lib/router'),
-  config:          util.config,
-  registerEntity:  util.registerEntity,
-  resetEntities:   util.resetEntities
-};
+exports = module.exports = require('./lib/webpack-loader');
+exports.api              = require('./lib/api');
+exports.Proxy            = require('./lib/proxy');
+exports.router           = require('./lib/router');
+exports.config           = util.config;
+exports.registerEntity   = util.registerEntity;
+exports.resetEntities    = util.resetEntities;

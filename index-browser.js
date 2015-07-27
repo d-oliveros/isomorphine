@@ -1,8 +1,6 @@
 
 /**
- * Browser's surface area API
+ * Browser's API surface area
  */
-module.exports = {
-  api:   require('./lib/api-browser'),
-  Proxy: require('./lib/proxy')
-};
+exports.api   = require('./lib/api-browser');
+exports.Proxy = require('./lib/proxy');
