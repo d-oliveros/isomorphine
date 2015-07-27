@@ -1,7 +1,7 @@
 {
   "name": "isomorphine",
-  "version": "0.2.4",
-  "description": "Isomorphic object wrapper for node.js and the web",
+  "version": "0.2.5",
+  "description": "Isomorphic pain medication for node.js and the web",
   "main": "index.js",
   "scripts": {
     "test": "node node_modules/.bin/mocha"
@@ -23,6 +23,9 @@
     "url": "https://github.com/d-oliveros/isomorphine/issues"
   },
   "homepage": "https://github.com/d-oliveros/isomorphine#readme",
+  "browser": {
+    "./index.js": "./index-browser.js"
+  },
   "dependencies": {
     "debug": "^2.2.0",
     "superagent": "^1.2.0"

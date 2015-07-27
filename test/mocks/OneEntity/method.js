@@ -1,2 +1,4 @@
 
-module.exports = function() {};
+module.exports = function() {
+  return 'You got it';
+};
