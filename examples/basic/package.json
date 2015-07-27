@@ -4,6 +4,7 @@
   "description": "Basic example of an isomorphic app using Isomorphine, React and Express",
   "main": "index.js",
   "scripts": {
+    "start": "node index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -16,7 +17,20 @@
     "babel": "^5.8.3",
     "body-parser": "^1.13.2",
     "express": "^4.13.1",
-    "isomorphine": "0.2.5",
+    "isomorphine": "*",
     "react": "^0.13.3"
+  },
+  "devDependencies": {
+    "babel-core": "^5.8.9",
+    "babel-eslint": "^4.0.5",
+    "babel-loader": "^5.3.2",
+    "eslint": "^0.24.1",
+    "eslint-plugin-react": "^3.0.0",
+    "gulp": "^3.9.0",
+    "gulp-task-loader": "^1.2.1",
+    "gulp-util": "^3.0.6",
+    "nodemon": "^1.3.8",
+    "webpack": "^1.10.5",
+    "webpack-dev-server": "^1.10.1"
   }
 }

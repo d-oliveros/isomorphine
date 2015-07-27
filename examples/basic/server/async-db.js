@@ -4,7 +4,6 @@
 // never gets here. The browser, instead of requiring the database, is
 // proxying the remote procedure calls
 
-
 // This is to demostrate that you can require browser-incompatible modules
 // in the API endpoints, without breaking the browser or bloating
 // the bundled file.
@@ -61,6 +60,7 @@ let models = {
 /**
  * Adds latency to every async callback method in each model.
  */
+/*
 for (let entity in models) {
   for (let method in models[entity]) {
     models[entity][method] = fakeLatency(models[entity][method]);
@@ -68,5 +68,13 @@ for (let entity in models) {
 }
 
 function fakeLatency(cb) {
-  return setTimeout(cb, (Math.floor(Math.random() * 1000)));
+  return function() {
+    let args = Array.prototype.slice.call(arguments);
+    setTimeout(() => {
+      cb.apply(this, args);
+    }, Math.floor(Math.random() * 1000));
+  };
 }
+//*/
+
+export default models;

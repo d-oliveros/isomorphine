@@ -2,12 +2,16 @@ import React from 'react';
 import {User, Post} from '../../api';
 
 export default class App extends React.Component {
-  constructor() {
-    this.state = {
+  constructor(props) {
+    super(props);
+
+    this.state = props.state || {
       user: null,
       post: null
     };
+  }
 
+  componentDidMount() {
     this.createPost();
     this.loadUser();
   }

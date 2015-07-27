@@ -8,6 +8,6 @@ let app = express();
 app.use(bodyParser.json());
 app.use(isomorphine.router(express));
 
-app.use('/', renderClient);
+app.get('/', renderClient);
 
 export default app;
