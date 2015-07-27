@@ -4,7 +4,7 @@
   "description": "Basic example of an isomorphic app using Isomorphine, React and Express",
   "main": "index.js",
   "scripts": {
-    "start": "node index",
+    "start": "gulp start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
