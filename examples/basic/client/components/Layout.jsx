@@ -6,8 +6,6 @@ export default class Layout extends React.Component {
 
     state = JSON.stringify(state);
 
-    console.log(state);
-
     return (
       <html>
         <head>
