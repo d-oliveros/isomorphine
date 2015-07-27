@@ -1,9 +1,13 @@
 var util = require('./lib/util');
 
 /**
- * API surface area
+ * Webpack loader
  */
 exports = module.exports = require('./lib/webpack-loader');
+
+/**
+ * API surface area
+ */
 exports.api              = require('./lib/api');
 exports.Proxy            = require('./lib/proxy');
 exports.router           = require('./lib/router');
