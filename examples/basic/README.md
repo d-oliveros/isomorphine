@@ -1,4 +1,8 @@
 
 # Basic example
 
-#### To start, run `gulp start`
+```
+npm install
+gulp start
+// Go to localhost:8800
+```
