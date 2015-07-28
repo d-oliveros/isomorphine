@@ -23,7 +23,6 @@ module.exports = {
     ...
   },
   module: {
-
     preLoaders: [
       {
         loaders: ['isomorphine']
