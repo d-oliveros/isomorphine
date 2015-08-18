@@ -1,7 +1,7 @@
 var expect = require('chai').expect;
 var isomorphine = require('../index');
 var isomorphineBrowser = require('../index-browser');
-var createApi = require('./util/create-api');
+var router = require('../lib/router');
 var entityMock = require('./mocks/entity');
 var mapMock = require('./mocks/map');
 
@@ -18,7 +18,6 @@ describe('Clientside', function() {
 
   describe('Proxy', function() {
     var Entity, server, previousConf;
-    var api = createApi();
 
     before(function(done) {
       previousConf = isomorphine.config();
@@ -33,7 +32,7 @@ describe('Clientside', function() {
       // entity as if we were in the browser's context.
       Entity = isomorphineBrowser.Proxy('Entity', entityMock);
 
-      server = api.listen(8888, done);
+      server = router.listen(8888, done);
     });
 
     it('should proxy an entity method through the rest API', function(done) {
