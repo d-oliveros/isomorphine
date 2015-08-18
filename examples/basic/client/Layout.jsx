@@ -2,7 +2,7 @@ import React from 'react';
 
 export default class Layout extends React.Component {
   render() {
-    let {body, state} = this.props;
+    let { body, state } = this.props;
 
     state = JSON.stringify(state);
 

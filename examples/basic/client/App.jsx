@@ -1,5 +1,5 @@
 import React from 'react';
-import {User, Post} from '../../api';
+import { User, Post } from '../api';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -18,7 +18,7 @@ export default class App extends React.Component {
 
   createPost() {
     let newPost = {
-      title: randomTitle(),
+      title: `Morphine #${Date.now()}`,
       body: 'This post was created from the browser.'
     };
 
@@ -61,7 +61,7 @@ export default class App extends React.Component {
     return (
       <div>
         <h1>Isomorphine example.</h1>
-        <input type='button' onClick={ this.createPost.bind(this) } value='Create a new post.'/>
+        <input type='button' onClick={ ::this.createPost } value='Create a new post.'/>
         { !user ? null : <p>User is loaded.</p> }
         { !post
           ? <p>No post loaded yet.</p>
@@ -75,8 +75,4 @@ export default class App extends React.Component {
       </div>
     );
   }
-}
-
-function randomTitle() {
-  return `Morphine #${Date.now()}`;
 }

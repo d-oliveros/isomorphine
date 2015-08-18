@@ -1,5 +1,5 @@
 import React from 'react';
-import App from './components/App.jsx';
+import App from './App.jsx';
 
 let state = window.__STATE__;
 

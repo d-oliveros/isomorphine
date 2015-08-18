@@ -57,7 +57,6 @@ describe('Serverside', function() {
         .end(done);
     });
 
-
     describe('Validation', function() {
       it('should run the middleware defined in the server-side entity', function(done) {
         request(app)
@@ -97,7 +96,6 @@ describe('Serverside', function() {
           .expect(408)
           .end(done);
       });
-
 
       it('should fail the validation with error status code', function(done) {
         request(app)
