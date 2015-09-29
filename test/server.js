@@ -38,9 +38,16 @@ describe('Serverside', function() {
       isomorphine.registerEntity('Entity', entityMock);
     });
 
-    it('should call a server-side entity and return OK', function(done) {
+    it('should only accept post requests and return 404(express)', function(done) {
       request(app)
         .get('/isomorphine/Entity/doSomething')
+        .expect(404)
+        .end(done);
+    });
+
+    it('should call a server-side entity and return OK', function(done) {
+      request(app)
+        .post('/isomorphine/Entity/doSomething')
         .expect(200)
         .expect('Content-Type', /json/)
         .expect({ values: ['Ok'] })
