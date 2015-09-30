@@ -1,7 +1,6 @@
 # Isomorphine
 
-Share and use your server-side models in the client and the browser without exposing
-your models or breaking/bloating your bundle, while conserving your module's API surface area.
+Use your serverside models and libraries from the client, without exposing your serverside code or breaking/bloating your bundle, while conserving your module's API surface area.
 
 ### Requirements
 - Webpack (I'll get the browserify transform soon though...)
@@ -73,10 +72,10 @@ You also need to add the router in your app's middleware:
 
 var express = require('express');
 var isomorphine = require('isomorphine');
-var bodyParser = require('body-parser');
+
 var app = express();
-app.use(bodyParser);
-app.use(isomorphine.router(express));
+
+app.use(isomorphine.router);
 ```
 
 After doing that, you can use the models in the browser by doing:
@@ -85,7 +84,7 @@ After doing that, you can use the models in the browser by doing:
 
 var User = require('../models').User;
 
-User.create({ name: 'Hi there!' }, 'any params you want', function(err, user, anotherFetchedServersideVal) {
+User.create({ name: 'Hi there!' }, 'any params you want', function(err, user, anotherVal) {
   console.log('Got back! User is: ', user);
 });
 ```
@@ -96,7 +95,7 @@ Or in the server, by doing:
 
 var User = require('../models').User;
 
-User.create({ name: 'Hi there!' }, 'any params you want', function(err, user, anotherFetchedServersideVal) {
+User.create({ name: 'Hi there!' }, 'any params you want', function(err, user, anotherVal) {
   console.log('Got back! User is: ', user);
 });
 ```
@@ -138,6 +137,9 @@ module.exports = {
 };
 ```
 
+### TODO
+
+* Write better docs
 
 ### Test
 
