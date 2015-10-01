@@ -1,38 +1,36 @@
 var expect = require('chai').expect;
-var isomorphine = require('../index');
-var isomorphineBrowser = require('../index-browser');
-var router = require('../lib/router');
-var entityMock = require('./mocks/entity');
+var path = require('path');
+var isomorphine = require('../index-browser');
+var Proxy = require('../lib/client/proxy');
+var apiFactory = require('../lib/server/factory');
+var config = require('../config');
+var entityMock = require('./mocks/Entity');
 var mapMock = require('./mocks/map');
 
 describe('Browser', function() {
   describe('API', function() {
     it('should map the entity methods to proxy instances', function() {
-      var api = isomorphineBrowser.inject(null, mapMock);
+      var api = isomorphine.proxy(mapMock);
 
-      expect(api.OneEntity.constructor).to.equal(isomorphineBrowser.Proxy);
-      expect(api.AnotherEntity.constructor).to.equal(isomorphineBrowser.Proxy);
-      expect(api.OneEntity.method).to.be.a('function');
+      expect(api.Entity.constructor).to.equal(Proxy);
+      expect(api.EmptyEntity.constructor).to.equal(Proxy);
+      expect(api.Entity.doSomething).to.be.a('function');
     });
   });
 
   describe('Proxy', function() {
-    var Entity, server, previousConf;
+    var Entity, server;
 
     before(function(done) {
-      previousConf = isomorphine.config();
-      isomorphine.config({ port: '8888' });
 
-      isomorphine.resetEntities();
+      // Instanciates a new Proxy
+      Entity = new Proxy('Entity', entityMock);
 
-      // Registers the isomorphine entity.
-      isomorphine.registerEntity('Entity', entityMock);
+      // Creates a new API to listen to the clientside proxied function calls
+      var api = apiFactory(path.join(__dirname, 'mocks'));
 
-      // We'll be testing the browser proxy as well, so we need to create a
-      // entity as if we were in the browser's context.
-      Entity = isomorphineBrowser.Proxy('Entity', entityMock);
-
-      server = router.listen(8888, done);
+      // Starts the test's API in port 8888
+      server = api.listen(config.port, done);
     });
 
     it('should proxy an entity method through the rest API', function(done) {
@@ -45,7 +43,6 @@ describe('Browser', function() {
     });
 
     after(function(done) {
-      isomorphine.config(previousConf);
       server.close(done);
     });
   });

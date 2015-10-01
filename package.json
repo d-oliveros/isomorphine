@@ -1,6 +1,6 @@
 {
   "name": "isomorphine",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Isomorphic pain medication for node.js and the web",
   "main": "index.js",
   "scripts": {
@@ -14,8 +14,7 @@
     "isomorphic",
     "morphic",
     "model",
-    "database",
-    "react"
+    "database"
   ],
   "author": "David Oliveros",
   "license": "MIT",
@@ -27,7 +26,6 @@
     "./index.js": "./index-browser.js"
   },
   "dependencies": {
-    "async-each-series": "^1.0.0",
     "body-parser": "^1.13.3",
     "debug": "^2.2.0",
     "express": "^4.13.3",
