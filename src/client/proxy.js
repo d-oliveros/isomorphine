@@ -57,13 +57,9 @@ Proxy.prototype.proxyDispatcher = function(method) {
     .send({ payload: payload })
     .set('Accept', 'application/json')
     .end(function(err, res) {
-      if (!res || !res.body) {
-        err = err || new Error('No response from server. ' +
+      if ((!res || !res.body) && !err) {
+        err = new Error('No response from server. ' +
           '(Hint: Have you mounted isomorphine.router() in your app?)');
-
-        res = {
-          body: null
-        };
       }
 
       if (err) {
