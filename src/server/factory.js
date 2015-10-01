@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-var Router = require('./router');
+var createRouter = require('./router');
 
 /**
  * Creates an isomorphine endpoint router with entities loaded from 'baseDir'.
@@ -19,7 +19,7 @@ var Router = require('./router');
  */
 module.exports = function routerFactory(baseDir) {
   var entities = requireEntities(baseDir);
-  var router = new Router(entities);
+  var router = createRouter(entities);
 
   // Exposes the entities in the router's surface area
   for (var key in entities) {

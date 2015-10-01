@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-var loader = require('../lib/webpack-loader');
+var loader = require('../src/webpack-loader');
 var expect = require('chai').expect;
 
 describe('Webpack Loader', function() {

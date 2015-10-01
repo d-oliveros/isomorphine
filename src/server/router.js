@@ -13,7 +13,7 @@ var ctrls = require('./controllers');
  *
  * @providesModule router
  */
-function Router(modules) {
+function createRouter(modules) {
   debug('Creating a new router. Modules: ' + JSON.stringify(modules, null, 3));
 
   var router = express();
@@ -65,4 +65,4 @@ function entityLoader(modules) {
   };
 }
 
-module.exports = Router;
+module.exports = createRouter;
