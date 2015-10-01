@@ -42,7 +42,7 @@ module.exports = {
 
 ### Usage
 
-* Check [this](https://github.com/d-oliveros/isomorphine/tree/master/examples/basic) for a full example.
+* Check [this](https://github.com/d-oliveros/isomorphine/tree/master/examples/isomorphic-react) for a full example.
 
 Lets say you have an api file structure that looks like this, with each method running database queries and business logic:
 
@@ -110,11 +110,29 @@ User.create({ title: 'Hi there!' }, 'whatever', function(err, user, anotherVal) 
 });
 ```
 
-In the server, "User.create()" is called directly, without any routing or serialization whatsoever, making it really convenient for isomorphic applications, as you would be able to re-use your fetching logic in your app.
+Your modules will _not_ be exposed in the browser, nor they will get added to the bundled file.
 
 You can use the api's endpoints from the server, using the same syntax and code than if you were in the browser, and viceversa.
 
-Your modules will _not_ be exposed in the browser, nor they will get added to the bundled file.
+```js
+// In /server/index.js
+
+/**
+ * In the server, "User.create()" is called directly, without any routing or
+ * serialization whatsoever, making it really convenient for
+ * isomorphic applications, as you would be able to re-use your
+ * data fetching logic in your app.
+ */
+var User = require('../api').User;
+
+User.create({ title: 'Hi there!' }, 'whatever', function(err, user, anotherVal) {
+
+  // Function called directly. No routing or serialization happened.
+  console.log('Got back! User is: ', user);
+});
+```
+
+Check [this](https://github.com/d-oliveros/isomorphine/tree/master/examples/isomorphic-react) for a full example app.
 
 
 ### RPC Context
@@ -146,11 +164,10 @@ module.exports = function deleteUser(userId, callback) {
 
 Keep in mind, when an API endpoint is called from the server, there's no `req` object being passed to the function calls, so you must validate sensitive paths in an earlier stage.
 
-Check the [this](https://github.com/d-oliveros/isomorphine/tree/master/examples/basic) for an example app.
 
 ### API
 
-`isomorphine.proxy(dir)` - Creates a proxied isomorphic API using the base directory `dir` that will let you use your server's API endpoints as plain functions.
+* `isomorphine.proxy(dir)` - Creates an isomorphic API using the base directory `dir` that will let you use your server's API endpoints as plain functions.
 
 
 ### Configuration

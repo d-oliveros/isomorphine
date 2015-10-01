@@ -1,7 +1,7 @@
 {
-  "name": "isomorphine-example-basic",
+  "name": "isomorphic-react-example",
   "version": "1.2.0",
-  "description": "Basic example of an isomorphic app using Isomorphine, React and Express",
+  "description": "Example of an isomorphic app using Isomorphine, React and Express",
   "main": "index.js",
   "scripts": {
     "start": "gulp start",
