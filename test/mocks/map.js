@@ -1,9 +1,12 @@
 
 module.exports = {
-  OneEntity: {
-    method: true
+  EmptyEntity: {
+    emptyFunction: true
   },
-  AnotherEntity: {
-    entityMethod: true
+  Entity: {
+    doSomething: true,
+    doSomethingAsync: true,
+    withContext: true,
+    withValidation: true
   }
 };

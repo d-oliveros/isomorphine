@@ -2,24 +2,21 @@ var path = require('path');
 var request = require('supertest');
 var express = require('express');
 var isomorphine = require('../index');
-var router = require('../lib/router');
-var entityMock = require('./mocks/entity');
 var expect = require('chai').expect;
+
+var mocksPath = path.resolve(__dirname, 'mocks');
 
 describe('Server', function() {
   describe('API', function() {
 
     it('should load all the modules in a folder', function() {
-      var apiRoot = path.resolve(__dirname, 'mocks');
+      var api = isomorphine.proxy(mocksPath);
 
-      var api = isomorphine.inject(apiRoot);
+      expect(api).to.be.a('function');
+      expect(api.Entity).to.be.an('object')
+        .with.property('doSomething').that.is.a('function');
 
-      expect(api).to.be.an('object');
-      expect(Object.keys(api).length).to.equal(2);
-      expect(api.OneEntity).to.be.an('object')
-        .with.property('method').that.is.a('function');
-
-      expect(api.OneEntity.method()).to.equal('You got it');
+      expect(api.Entity.doSomething()).to.equal('You got it');
     });
   });
 
@@ -27,15 +24,13 @@ describe('Server', function() {
     var app;
 
     before(function() {
+      var api = isomorphine.proxy(mocksPath);
       app = express();
 
-      app.use(router);
+      app.use(api);
       app.use(function(err, req, res, next) { // eslint-disable-line
         res.sendStatus(err.statusCode || err.status || 500);
       });
-
-      isomorphine.resetEntities();
-      isomorphine.registerEntity('Entity', entityMock);
     });
 
     it('should only accept post requests and return 404(express)', function(done) {
