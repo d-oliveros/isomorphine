@@ -5,7 +5,7 @@ var router = require('../lib/router');
 var entityMock = require('./mocks/entity');
 var mapMock = require('./mocks/map');
 
-describe('Clientside', function() {
+describe('Browser', function() {
   describe('API', function() {
     it('should map the entity methods to proxy instances', function() {
       var api = isomorphineBrowser.inject(null, mapMock);
