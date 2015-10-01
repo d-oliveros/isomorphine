@@ -1,5 +1,5 @@
 
-# Basic example
+# Basic Isomorphic React example
 
 ```
 npm install
