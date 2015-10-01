@@ -1,9 +1,9 @@
-import db from '../../server/async-db';
+import models from '../../server/models';
 
 export default function create(user, callback) {
 
   // Do the DB query, etc
   console.log('Creating a new user...');
 
-  db.User.create(user, callback);
+  models.User.create(user, callback);
 }

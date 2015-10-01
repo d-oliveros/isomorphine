@@ -1,9 +1,9 @@
-import db from '../../server/async-db';
+import models from '../../server/models';
 
 export default function loadUser(user, options, callback) {
 
   // Do the DB query, etc
   console.log('Loading a user...');
 
-  db.User.load(user, options, callback);
+  models.User.load(user, options, callback);
 }

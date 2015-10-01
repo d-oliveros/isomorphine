@@ -1,12 +1,13 @@
-
-// This file represents the database models.
-// You can use any database and any library you want, because the browser
-// never gets here. The browser, instead of requiring the database, is
-// proxying the remote procedure calls
-
-// This is to demostrate that you can require browser-incompatible modules
-// in the API endpoints, without breaking the browser or bloating
-// the bundled file.
+/**
+ * This file represents the database models.
+ * You can use any database and any library you want, because the browser
+ * never gets here. The browser, instead of requiring the database, is
+ * proxying the remote procedure calls
+ *
+ * This is to demostrate that you can require browser-incompatible modules
+ * in the API endpoints, without breaking the browser or bloating
+ * the bundled file.
+ */
 import net from 'net'; // eslint-disable-line
 import fs from 'fs'; // eslint-disable-line
 

@@ -1,9 +1,9 @@
 import express from 'express';
-import isomorphine from 'isomorphine';
+import api from '../api';
 import renderClient from './render';
 
 let app = express();
-app.use(isomorphine.router);
+app.use(api);
 app.get('/', renderClient);
 
 export default app;

@@ -1,6 +1,6 @@
 {
   "name": "isomorphine-example-basic",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Basic example of an isomorphic app using Isomorphine, React and Express",
   "main": "index.js",
   "scripts": {
@@ -16,7 +16,7 @@
   "dependencies": {
     "babel": "^5.8.3",
     "express": "^4.13.1",
-    "isomorphine": "0.4.0",
+    "isomorphine": "0.6.0",
     "react": "^0.13.3"
   },
   "devDependencies": {
