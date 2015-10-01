@@ -1,6 +1,6 @@
 # Isomorphine
 
-Creates an isomorphic API proxy that lets you use your serverside modules without exposing your server's code or breaking/bloating your bundle.
+Creates an isomorphic API proxy that lets you use your server's API endpoints as plain functions, without exposing your server's code or breaking/bloating your bundle.
 
 Isomorphine lets you require your serverside's api endpoints ala CommonJS. When requiring the endpoints from the browser's context, the resolved modules will actually be proxied mirrors to the serverside entities, that when called, will create a HTTP request to the server's isomorphine endpoint.
 
