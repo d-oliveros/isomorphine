@@ -23,6 +23,19 @@ You also need to [configure your webpack.config.js file](#webpack-configuration)
 
 ### Usage
 
+Isomorphine has only one method: `isomorphine.proxy()`. This method behaves differently when being called from the server and the browser.
+
+```js
+var isomorphine = require('isomorphine');
+module.exports = isomorphine.proxy();
+```
+In the server, `isomorphine.proxy()` requires all the modules in the current directory, and creates an express router listening to remote procedure calls (RPCs) on those methods.
+
+In the browser, `isomorphine.proxy()` scans the file structure of your modules in the current directory via the webpack loader, and returns an object with a mirror of all the entities mapped to RPCs. You can use these functions the same way as you would use the functions in the server.
+
+
+### How It Works
+
 * Check [this](https://github.com/d-oliveros/isomorphine/tree/master/examples/isomorphic-react) for a full example.
 
 Lets say your model's file structure in the server looks like this. Each method is running database queries and business logic:
@@ -146,11 +159,6 @@ module.exports = function deleteUser(userId, callback) {
 ```
 
 Keep in mind, when a function is called from the server, there's no `req` object being passed to the function calls, so you must validate sensitive paths in an earlier stage.
-
-
-### API
-
-* `isomorphine.proxy(dir)` - Creates an isomorphic API using the base directory `dir` that will let you use your server's API endpoints as plain functions.
 
 
 ### Webpack Configuration
