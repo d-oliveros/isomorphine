@@ -1,6 +1,6 @@
 # Isomorphine
 
-Isomorphine lets you access server-side functions from the browser as if you were in the server, without exposing serverside code. It lets you create an isomorphic API that can be used the same way in the browser and the server.
+Isomorphine lets you access server-side functions from the browser as if you were in the server, without exposing server-side code. It lets you create an isomorphic API that can be used the same way in the browser and the server.
 
 With isomorphine, you don’t need to do HTTP requests and endpoints anymore. You can create API endpoints easily, using plain functions instead of complex controllers.
 
