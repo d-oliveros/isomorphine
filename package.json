@@ -1,7 +1,7 @@
 {
   "name": "isomorphine",
-  "version": "0.6.1",
-  "description": "Isomorphic pain medication for node.js and the web",
+  "version": "0.6.2",
+  "description": "Access server-side functions from the browser, as if you were in the server.",
   "main": "index.js",
   "scripts": {
     "test": "node node_modules/.bin/mocha"
@@ -11,10 +11,12 @@
     "url": "git+https://github.com/d-oliveros/isomorphine.git"
   },
   "keywords": [
+    "rpc",
+    "remote",
+    "proxy",
     "isomorphic",
     "morphic",
-    "model",
-    "database"
+    "model"
   ],
   "author": "David Oliveros",
   "license": "MIT",
@@ -33,10 +35,8 @@
     "superagent": "^1.2.0"
   },
   "devDependencies": {
-    "body-parser": "^1.13.2",
     "chai": "^3.2.0",
     "es6-promise": "^3.0.2",
-    "express": "^4.13.1",
     "mocha": "^2.2.5",
     "supertest": "^1.0.1"
   }
