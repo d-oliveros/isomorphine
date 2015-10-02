@@ -62,7 +62,7 @@ var isomorphine = require('isomorphine');
  *
  * This API will behave differently when required from the server and the browser.
  */
-module.exports = isomorphine.proxy(__dirname);
+module.exports = isomorphine.proxy();
 ```
 
 In the server, this will create an express-based router, that you can then connect in your express-based app:
