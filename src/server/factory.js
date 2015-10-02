@@ -36,6 +36,8 @@ module.exports = function routerFactory(baseDir) {
  * @return {Object}       An object with all the modules loaded.
  */
 function requireEntities(dir) {
+  if (!dir) dir = getCallerDirname();
+
   var modules = {};
   var entities = fs.readdirSync(dir);
 
@@ -53,4 +55,20 @@ function requireEntities(dir) {
   });
 
   return modules;
+}
+
+/**
+ * Gets the dirname of the caller function that is calling this method.
+ * @return {String}  Absolute path to the caller's directory.
+ */
+function getCallerDirname() {
+  var orig = Error.prepareStackTrace;
+  Error.prepareStackTrace = function(_, stack){ return stack; };
+  var err = new Error();
+  Error.captureStackTrace(err, arguments.callee);
+  var stack = err.stack;
+  Error.prepareStackTrace = orig;
+  var requester = stack[2].getFileName();
+
+  return path.dirname(requester);
 }

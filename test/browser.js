@@ -8,7 +8,7 @@ var entityMock = require('./mocks/Entity');
 var mapMock = require('./mocks/map');
 
 describe('Browser', function() {
-  describe('API', function() {
+  describe('Factory', function() {
     it('should map the entity methods to proxy instances', function() {
       var api = isomorphine.proxy(mapMock);
 

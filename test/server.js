@@ -7,7 +7,7 @@ var expect = require('chai').expect;
 var mocksPath = path.resolve(__dirname, 'mocks');
 
 describe('Server', function() {
-  describe('API', function() {
+  describe('Factory', function() {
 
     it('should load all the modules in a folder', function() {
       var api = isomorphine.proxy(mocksPath);
@@ -17,6 +17,15 @@ describe('Server', function() {
         .with.property('doSomething').that.is.a('function');
 
       expect(api.Entity.doSomething()).to.equal('You got it');
+    });
+
+    it('should load all the modules in a folder without dir param', function() {
+      var api = isomorphine.proxy();
+
+      expect(api).to.be.a('function');
+      expect(api.mocks).to.be.an('object')
+        .with.property('map').that.is.an('object')
+          .that.include.keys(['Entity', 'EmptyEntity']);
     });
   });
 
