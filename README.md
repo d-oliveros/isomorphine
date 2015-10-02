@@ -67,7 +67,7 @@ var modelsAPI = require('../models');
 app.use(modelsAPI);
 ```
 
-After doing that, you can call the models in the browser by doing, for example:
+After connecting the router, you can call the models in the browser by doing this, for example:
 
 ```js
 // In /client/index.js
@@ -93,9 +93,9 @@ User.create({ title: 'Hi there!' }, 'whatever', function(err, user, anotherVal) 
 });
 ```
 
-Your models will _not_ be exposed in the browser, nor they will get added to the bundled file.
+**Your models will _not_ be exposed in the browser, nor they will get added to the bundled file.**
 
-You can use the models from the server, using the same syntax and code than if you were in the browser, and viceversa.
+You can access the models from the server, using the same syntax and code that you would use as if you were in the browser, and vice versa.`
 
 ```js
 // In /server/index.js
@@ -120,9 +120,9 @@ Check [this](https://github.com/d-oliveros/isomorphine/tree/master/examples/isom
 
 ### RPC Context
 
-Allowing any API endpoint to be called from the browsers needs a proper validation mechanism to avoid getting exploited easily.
+Allowing any API endpoint to be called from the browser, needs a proper validation mechanism to avoid getting exploited easily.
 
-When a call to an API endpoint is done from the browser, a special context is passed to the serverside function calls. The request object `req` and a special `xhr` flag are passed as the function's context. You can use this context to validate an incoming request:
+When a call to a server-side function is done from the browser, a special context is passed to the function call. The request object `req` and a special `xhr` flag are passed as the function's context. You can use this context to validate an incoming request:
 
 ```js
 // In /models/User/delete.js
