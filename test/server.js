@@ -12,7 +12,8 @@ describe('Server', function() {
     it('should load all the modules in a folder', function() {
       var api = isomorphine.proxy(mocksPath);
 
-      expect(api).to.be.a('function');
+      expect(api).to.be.an('object');
+      expect(api.router).to.be.a('function');
       expect(api.Entity).to.be.an('object')
         .with.property('doSomething').that.is.a('function');
 
@@ -22,7 +23,7 @@ describe('Server', function() {
     it('should load all the modules in a folder without dir param', function() {
       var api = isomorphine.proxy();
 
-      expect(api).to.be.a('function');
+      expect(api).to.be.a('object');
       expect(api.mocks).to.be.an('object')
         .with.property('map').that.is.an('object')
           .that.include.keys(['Entity', 'EmptyEntity']);
@@ -36,7 +37,7 @@ describe('Server', function() {
       var api = isomorphine.proxy(mocksPath);
       app = express();
 
-      app.use(api);
+      app.use(api.router);
       app.use(function(err, req, res, next) { // eslint-disable-line
         res.sendStatus(err.statusCode || err.status || 500);
       });

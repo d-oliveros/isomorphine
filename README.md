@@ -77,7 +77,7 @@ var app = express();
 var modelsAPI = require('../models');
 
 // Use the isomorphic API: Listen for isomorphine's remote procedure calls (RPCs)
-app.use(modelsAPI);
+app.use(modelsAPI.router);
 ```
 
 After connecting the router, you can call the models in the browser by doing this, for example:

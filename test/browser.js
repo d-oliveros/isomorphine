@@ -30,7 +30,7 @@ describe('Browser', function() {
       var api = apiFactory(path.join(__dirname, 'mocks'));
 
       // Starts the test's API in port 8888
-      server = api.listen(config.port, done);
+      server = api.router.listen(config.port, done);
     });
 
     it('should proxy an entity method through the rest API', function(done) {
