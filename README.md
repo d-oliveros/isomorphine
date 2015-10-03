@@ -1,8 +1,8 @@
 # Isomorphine
 
-Isomorphine lets you access server-side functions from the browser as if you were in the server, without exposing server-side code. It lets you create an isomorphic API that can be used the same way in the browser and the server.
+Isomorphine is a Webpack loader that lets you access server-side functions from the browser as if you were in the server, without exposing server-side code. It lets you create an isomorphic API that can be used the same way in the browser and the server.
 
-With isomorphine, you don’t need to do HTTP requests and endpoints anymore. You can create API endpoints easily, using plain functions instead of complex controllers.
+You don’t need to do HTTP requests and endpoints anymore. You can create API endpoints easily, using plain functions instead of complex controllers.
 
 The browser accesses a proxy of the server’s methods that are being required. The proxy is a mirror of the server-side entity. The proxy creates an HTTP request to Isomorphine’s endpoint (in the server).
 
