@@ -1,6 +1,6 @@
 {
   "name": "isomorphine",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "Access server-side functions from the browser, as if you were in the server.",
   "main": "index.js",
   "scripts": {
@@ -12,6 +12,8 @@
   },
   "keywords": [
     "rpc",
+    "webpack",
+    "loader",
     "remote",
     "proxy",
     "isomorphic",
@@ -25,7 +27,7 @@
   },
   "homepage": "https://github.com/d-oliveros/isomorphine#readme",
   "browser": {
-    "./index.js": "./index-browser.js"
+    "./index.js": "./browser.js"
   },
   "dependencies": {
     "body-parser": "^1.13.3",
