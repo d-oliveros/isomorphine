@@ -1,6 +1,6 @@
 var expect = require('chai').expect;
 var path = require('path');
-var isomorphine = require('../index-browser');
+var isomorphine = require('../browser');
 var Proxy = require('../src/client/proxy');
 var apiFactory = require('../src/server/factory');
 var config = require('../config');

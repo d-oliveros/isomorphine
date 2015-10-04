@@ -20,19 +20,14 @@ var util = require('../util');
  */
 module.exports = function routerFactory(baseDir) {
   var entities = requireEntities(baseDir);
-  var modules = {};
 
-  // Exposes the entities in the router's surface area
-  for (var key in entities) {
-    modules[key] = entities[key];
-  }
-
-  util.invariant(!modules.hasOwnProperty('router'),
+  util.invariant(!entities.hasOwnProperty('router'),
     'You can\'t use an entity with name "router"');
 
-  modules.router = createRouter(entities);
+  // Create the API endpoint that will listen for RPCs.
+  entities.router = createRouter(entities);
 
-  return modules;
+  return entities;
 };
 
 /**
