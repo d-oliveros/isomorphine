@@ -48,7 +48,7 @@ Lets say your server's models file structure looks like this. Each method is run
 
 You can not directly require these files in the browser, as the browser doesn't have access to the database layer (and you don't want to pollute the bundled file).
 
-With isomorphine, you can provide these modules in the browser (as proxy mirrors) by doing:
+With Isomorphine, you can provide these modules in the browser (as proxy mirrors) by doing:
 
 ```js
 // In /models/index.js
@@ -75,7 +75,7 @@ var app = express();
 // Requires the isomorphic API created with 'isomorphine.proxy()'
 var modelsAPI = require('../models');
 
-// Use the isomorphic API: Listen for isomorphine's remote procedure calls (RPCs)
+// Use the isomorphic API: Listen for Isomorphine's remote procedure calls (RPCs)
 app.use(modelsAPI.router);
 ```
 
@@ -86,14 +86,14 @@ After connecting the router, you can call the models in the browser by doing thi
 
 /**
  * We can interact with the models without having to do any manual HTTP requests
- * because, well, that's what isomorphine does...
+ * because, well, that's what Isomorphine does...
  */
 var User = require('../models').User;
 
 /**
  * When called from the browser, the browser serialized each parameter sent
  * to the function call, and sends the serialized payload via a HTTP request
- * to isomorphine's endpoint in the server.
+ * to Isomorphine's endpoint in the server.
  *
  * Isomorphine serializes the result of the function call in the server,
  * returns the resulting values, deserializes the values, and calls
@@ -156,7 +156,7 @@ Keep in mind, when a function is called from the server, there's no `req` object
 
 ### Webpack Configuration
 
-In order for isomorphine to work, you need to specify isomorphine as a webpack loader in your webpack.config.js file:
+In order for Isomorphine to work, you need to specify Isomorphine as a webpack loader in your webpack.config.js file:
 
 ```js
 module.exports = {
