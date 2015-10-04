@@ -1,13 +1,8 @@
 # Isomorphine
 
-Isomorphine is a Webpack loader that lets you access server-side functions from the browser as if you were in the server, without exposing server-side code. It lets you create an isomorphic API that can be used the same way in the browser and the server.
+Isomorphine is a Webpack loader that lets you require and use server-side entities from the browser, as if you were in the server. _It does not expose server-side code._
 
-You don’t need to do HTTP requests and endpoints anymore. You can create API endpoints easily, using plain functions instead of complex controllers.
-
-The browser accesses a proxy of the server’s methods that are being required. The proxy is a mirror of the server-side entity. The proxy creates an HTTP request to Isomorphine’s endpoint (in the server).
-
-If the server (as opposed to the browser) is requiring the functions, Isomorphine will be smart, it will not create a proxy or do any extra routing.
-
+You don’t need to do HTTP requests and endpoints anymore. You can skip the transport layer, and focus on your application's purpose.
 
 ### Requirements
 - Webpack (I'll get the browserify transform soon though...)
@@ -38,7 +33,11 @@ In the browser, `isomorphine.proxy()` scans the file structure of your modules i
 
 * Check [this](https://github.com/d-oliveros/isomorphine/tree/master/examples/isomorphic-react) for a full example.
 
-Lets say your model's file structure in the server looks like this. Each method is running database queries and business logic:
+Isomorphine lets you build isomorphic APIs that can be used the same way in the browser and the server. The browser accesses a proxy of the server’s methods that are being required. The proxy is a mirror of the server-side entity. The proxy creates an HTTP request to Isomorphine’s endpoint (in the server).
+
+If the server (as opposed to the browser) is requiring the functions, Isomorphine will be smart, it will not create a proxy or do any extra routing.
+
+Lets say your server's models file structure looks like this. Each method is running database queries and business logic:
 
 ```
 /models/index.js
@@ -91,17 +90,16 @@ After connecting the router, you can call the models in the browser by doing thi
  */
 var User = require('../models').User;
 
+/**
+ * When called from the browser, the browser serialized each parameter sent
+ * to the function call, and sends the serialized payload via a HTTP request
+ * to isomorphine's endpoint in the server.
+ *
+ * Isomorphine serializes the result of the function call in the server,
+ * returns the resulting values, deserializes the values, and calls
+ * this callback function with the resulting values.
+ */
 User.create({ title: 'Hi there!' }, 'whatever', function(err, user, anotherVal) {
-
-  /**
-   * When called from the browser, the browser serialized each parameter sent
-   * to the function call, and sends the serialized payload via a HTTP request
-   * to isomorphine's endpoint in the server.
-   *
-   * Isomorphine serializes the result of the function call in the server,
-   * returns the resulting values, deserializes the values, and calls
-   * this callback function with the resulting values.
-   */
   console.log('Got back! User is: ', user);
 });
 ```
@@ -122,34 +120,29 @@ You can access the models from the server, using the same syntax and code that y
 var User = require('../models').User;
 
 User.create({ title: 'Hi there!' }, 'whatever', function(err, user, anotherVal) {
-
-  // Function called directly. No routing or serialization happened.
-  console.log('Got back! User is: ', user);
+  console.log('Function called directly. No routing or serialization happened.');
 });
 ```
 
-Check [this](https://github.com/d-oliveros/isomorphine/tree/master/examples/isomorphic-react) for a full example app.
+Check [this](https://github.com/d-oliveros/isomorphine/tree/master/examples/isomorphic-react) for an isomorphic react example app.
 
 
 ### RPC Context
 
 Allowing any API endpoint to be called from the browser, needs a proper validation mechanism to avoid getting exploited easily.
 
-When a call to a server-side function is done from the browser, a special context is passed to the function call. The request object `req` and a special `xhr` flag are passed as the function's context. You can use this context to validate an incoming request:
+When a call to a server-side function is done from the browser, a special context is passed to the function call. The request object `req` and a special `xhr` flag are passed as the function's context. You can use this context to validate incoming requests:
 
 ```js
 // In /models/User/delete.js
 
+/**
+ * When an endpoint is called from the browser, 'this.xhr' will be true,
+ * and you'll be able to access the request object in 'this.req'.
+ */
 module.exports = function deleteUser(userId, callback) {
-
-  /**
-   * When an endpoint is called from the browser, 'this.xhr' will be true,
-   * and you'll be able to access the request object in 'this.req'.
-   */
-  if (this.xhr && this.req.cookies.role !== 'admin') {
-
-    // eg. Only allow admins to delete users
-    return callback(new Error('Not admin.'));
+  if (this.xhr && this.req.cookies.role !== 'admin') { // Validate using `req`
+    return callback(401);
   }
 
   // do the db query to delete the user...
@@ -176,9 +169,16 @@ module.exports = {
 };
 ```
 
-You also need to tell the browser the host and port of your isomorphine router (The default is `localhost:3000`).
+Isomorphine needs to know the host and port of your server. The default configuration is
 
-You can set those variables like this:
+```
+{
+  "host": "http://localhost",
+  "port": 3000
+}
+```
+
+You can configure Isomorphine's server host through Webpack:
 
 ```js
 var webpack = require('webpack');
@@ -200,7 +200,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        ISOMORPHINE_HOST: '"myhost.com"',
+        ISOMORPHINE_HOST: '"http://myhost.com"',
         ISOMORPHINE_PORT: '"8000"'
       }
     })
