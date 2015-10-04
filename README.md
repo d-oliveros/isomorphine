@@ -1,6 +1,6 @@
 # Isomorphine
 
-Isomorphine is a Webpack loader that lets you require and use server-side entities from the browser, as if you were in the server. _It does not expose server-side code._
+Isomorphine is a Webpack loader that lets you require and use server-side entities from the browser, as if you were in the server. It does _not_ expose server-side code.
 
 You don’t need to do HTTP requests and endpoints anymore. You can skip the transport layer, and focus on your application's purpose.
 
@@ -26,7 +26,7 @@ module.exports = isomorphine.proxy();
 ```
 In the server, `isomorphine.proxy()` requires all the modules in the current directory, and creates an express router listening to remote procedure calls (RPCs) on those methods.
 
-In the browser, `isomorphine.proxy()` scans the file structure of your modules in the current directory via the webpack loader, and returns an object with a mirror of all the entities mapped to RPCs. You can use these functions the same way as you would use the functions in the server.
+In the browser, `isomorphine.proxy()` scans the file structure of your modules in the current directory via the webpack loader, and returns an object with a mirror of all the entities mapped to RPCs. You can use these functions the same way as you would use the functions in the server. These modules are _not_ required in the browser.
 
 
 ### How It Works
