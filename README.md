@@ -31,7 +31,7 @@ In the browser, `isomorphine.proxy()` scans the file structure of your modules i
 
 ### How It Works
 
-* Check [this](https://github.com/d-oliveros/isomorphine/tree/master/examples/isomorphic-react) for a full example.
+* Check the [barebone example](https://github.com/d-oliveros/isomorphine/tree/master/examples/barebone), and the [isomorphic todoMVC](https://github.com/d-oliveros/isomorphic-todomvc) for full examples.
 
 Isomorphine lets you build isomorphic APIs that can be used the same way in the browser and the server. The browser accesses a proxy of the server’s methods that are being required. The proxy is a mirror of the server-side entity. The proxy creates an HTTP request to Isomorphine’s endpoint (in the server).
 
@@ -124,8 +124,7 @@ User.create({ title: 'Hi there!' }, 'whatever', function(err, user, anotherVal) 
 });
 ```
 
-Check [this](https://github.com/d-oliveros/isomorphine/tree/master/examples/isomorphic-react) for an isomorphic react example app.
-
+Remember to check the [barebone example](https://github.com/d-oliveros/isomorphine/tree/master/examples/barebone), and the [isomorphic todoMVC](https://github.com/d-oliveros/isomorphic-todomvc) for full examples.
 
 ### RPC Context
 
