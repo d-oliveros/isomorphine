@@ -35,6 +35,23 @@ module.exports = function proxyFactory(entityMap) {
     }
   }
 
+  proxies.config = function(config) {
+    if (typeof config !== 'object' || config === null) {
+      throw new Error('Config is not valid');
+    }
+
+    for (var modName in entityMap) {
+      if (proxies.hasOwnProperty(modName)) {
+        if (config.host) {
+          proxies[modName]._host = config.host;
+        }
+        if (config.port) {
+          proxies[modName]._port = config.port;
+        }
+      }
+    }
+  };
+
   debug('Loaded entity mirror proxies in the browser: ', proxies);
 
   return proxies;

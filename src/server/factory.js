@@ -22,10 +22,14 @@ module.exports = function routerFactory(baseDir) {
   var entities = requireEntities(baseDir);
 
   util.invariant(!entities.hasOwnProperty('router'),
-    'You can\'t use an entity with name "router"');
+    'You can\'t use an entity with the name "router"');
 
   // Create the API endpoint that will listen for RPCs.
   entities.router = createRouter(entities);
+
+  // The config method does nothing in the server.
+  // It is only used when called from the browser.
+  entities.config = util.emptyFunction;
 
   return entities;
 };

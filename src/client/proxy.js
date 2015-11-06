@@ -22,6 +22,9 @@ function Proxy(name, entityMap) {
 
   this.name = name;
 
+  this._host = config.host;
+  this._port = config.port;
+
   for (var method in entityMap) {
     if (entityMap.hasOwnProperty(method)) {
       this[method] = this.proxyDispatcher.bind(this, method);
@@ -94,8 +97,11 @@ Proxy.prototype.proxyDispatcher = function(method) {
  */
 Proxy.prototype.buildEndpoint = function(method) {
   var name = this.name;
-  var host = config.host;
-  var port = config.port;
+  var host = this._host;
+  var port = this._port;
+
+  if (!host) throw new Error('No host is specified in Proxy config');
+  if (!port) throw new Error('No port is specified in Proxy config');
 
   var base = host + ':' + port;
   var path = '/isomorphine/' + name + '/' + method;
