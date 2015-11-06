@@ -64,6 +64,7 @@ module.exports = function proxyFactory(entityMap) {
 function createProxies(config, map, parentPath) {
   parentPath = parentPath || [];
 
+  var isBase = parentPath.length === 0;
   var proxies = {};
   var path;
 
@@ -73,7 +74,7 @@ function createProxies(config, map, parentPath) {
         proxies[key] = createProxies(config, map[key], parentPath.concat([key]));
       }
       else if (isBoolean(map[key])) {
-        path = parentPath.join('/') + '/' + key;
+        path = parentPath.join('/') + (isBase ? '' : '/') + key;
         proxies[key] = createProxiedMethod(config, path);
       }
     }
