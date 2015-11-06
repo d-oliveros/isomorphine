@@ -19,45 +19,54 @@ var util = require('../util');
  * @return {Object}           Required modules.
  */
 module.exports = function routerFactory(baseDir) {
-  var entities = requireEntities(baseDir);
+  var methods = requireMethods(baseDir);
 
-  util.invariant(!entities.hasOwnProperty('router'),
+  util.invariant(!methods.hasOwnProperty('router'),
     'You can\'t use an entity with the name "router"');
 
   // Create the API endpoint that will listen for RPCs.
-  entities.router = createRouter(entities);
+  methods.router = createRouter(methods);
 
   // The config method does nothing in the server.
   // It is only used when called from the browser.
-  entities.config = util.emptyFunction;
+  methods.config = util.emptyFunction;
 
-  return entities;
+  return methods;
 };
 
 /**
- * Requires the entities in dir.
+ * Recursively requires the modules in current dir.
  *
  * @param  {String}  dir  The base directory to require entities from.
  * @return {Object}       An object with all the modules loaded.
  */
-function requireEntities(dir) {
+function requireMethods(dir) {
   if (!dir) dir = getCallerDirname();
 
   var modules = {};
-  var entities = fs.readdirSync(dir);
 
-  entities.forEach(function(entity) {
-    if (entity.indexOf('.js') > -1) return; // Only get folders
+  fs
+    .readdirSync(dir)
+    .filter(function(filename) {
+      return filename !== 'index.js';
+    })
+    .forEach(function(filename) {
+      var filePath = path.join(dir, filename);
+      var Stats = fs.lstatSync(filePath);
+      var isLink = Stats.isSymbolicLink();
+      var isDir = Stats.isDirectory();
+      var isFile = Stats.isFile();
+      var isJS = filename.indexOf('.js') > -1;
 
-    var methods = fs.readdirSync(path.join(dir, entity));
+      if (!isLink && isDir) {
+        modules[filename] = requireMethods(filePath);
+      }
 
-    methods.forEach(function(method) {
-      if (method.indexOf('.js') < 0 || method === 'index.js') return;
-      method = method.replace('.js', '');
-      modules[entity] = modules[entity] || {};
-      modules[entity][method] = require(path.join(dir, entity, method));
+      else if (!isLink && isFile && isJS) {
+        var entityName = filename.replace('.js', '');
+        modules[entityName] = require(filePath);
+      }
     });
-  });
 
   return modules;
 }

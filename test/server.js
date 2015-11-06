@@ -1,8 +1,8 @@
 var path = require('path');
 var request = require('supertest');
 var express = require('express');
-var isomorphine = require('../index');
 var expect = require('chai').expect;
+var isomorphine = require('../index');
 
 var mocksPath = path.resolve(__dirname, 'mocks');
 
@@ -12,8 +12,13 @@ describe('Server', function() {
     it('should load all the modules in a folder', function() {
       var api = isomorphine.proxy(mocksPath);
 
+      // Isomorphine exports
       expect(api).to.be.an('object');
       expect(api.router).to.be.a('function');
+
+      // Methods that were required by isomorphine
+      expect(api.aSingleMethod).to.be.an('function');
+
       expect(api.Entity).to.be.an('object')
         .with.property('doSomething').that.is.a('function');
 
@@ -24,9 +29,14 @@ describe('Server', function() {
       var api = isomorphine.proxy();
 
       expect(api).to.be.a('object');
+
       expect(api.mocks).to.be.an('object')
         .with.property('map').that.is.an('object')
-          .that.include.keys(['Entity', 'EmptyEntity']);
+          .that.include.keys(['Entity', 'NestedEntity']);
+
+      expect(api.mocks.NestedEntity).to.be.an('object')
+        .with.property('ChildEntity').that.is.an('object')
+          .that.include.keys(['childMethod']);
     });
   });
 
@@ -50,9 +60,18 @@ describe('Server', function() {
         .end(done);
     });
 
-    it('should call a server-side entity and return OK', function(done) {
+    it('should call a server-side method and return OK', function(done) {
       request(app)
-        .post('/isomorphine/Entity/doSomething')
+        .post('/isomorphine/aSingleMethod')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect({ values: ['Ok'] })
+        .end(done);
+    });
+
+    it('should call a nested server-side method and return OK', function(done) {
+      request(app)
+        .post('/isomorphine/NestedEntity/ChildEntity/childMethod')
         .expect(200)
         .expect('Content-Type', /json/)
         .expect({ values: ['Ok'] })

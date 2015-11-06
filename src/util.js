@@ -1,5 +1,4 @@
 var debug = require('debug')('isomorphine:util');
-var config = require('../config');
 
 /**
  * @providesModule util
@@ -7,7 +6,9 @@ var config = require('../config');
 exports.emptyFunction     = emptyFunction;
 exports.firstFunction     = firstFunction;
 exports.serializeCallback = serializeCallback;
-exports.config            = configInterface;
+exports.isObject          = isObject;
+exports.isBoolean         = isBoolean;
+exports.isFunction        = isFunction;
 exports.invariant         = invariant;
 
 /**
@@ -57,22 +58,30 @@ function serializeCallback(args) {
 }
 
 /**
- * Gets/Sets the configuration object.
- *
- * @param  {Object}  config  The config to load.
- * @return {Object}          The current configuration.
+ * Checks if the passed in variable is an object.
+ * @param  {Mixed}  obj  The variable to check.
+ * @return {Boolean}     True if the variable is an object.
  */
-function configInterface(newConfig) {
-  if (newConfig) {
-    debug('Setting new config: ', newConfig);
-    for (var key in newConfig) {
-      config[key] = newConfig[key];
-    }
-  }
+function isObject(obj) {
+  return typeof obj === 'object' && obj !== null;
+}
 
-  debug('Getting config: ', config);
+/**
+ * Checks if the passed in variable is a boolean.
+ * @param  {Mixed}  obj  The variable to check.
+ * @return {Boolean}     True if the variable is a Boolean.
+ */
+function isBoolean(obj) {
+  return typeof obj === 'boolean';
+}
 
-  return config;
+/**
+ * Checks if the passed in variable is a function.
+ * @param  {Mixed}  obj  The variable to check.
+ * @return {Boolean}     True if the variable is a Function.
+ */
+function isFunction(obj) {
+  return typeof obj === 'function';
 }
 
 /**

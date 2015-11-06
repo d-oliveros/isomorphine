@@ -2,7 +2,13 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var createError = require('http-errors');
 var debug = require('debug')('isomorphine:router');
+var isObject = require('../util').isObject;
+var isFunction = require('../util').isFunction;
 var ctrls = require('./controllers');
+
+var getPayload = ctrls.getPayload;
+var callEntityMethod = ctrls.callEntityMethod;
+var serve = ctrls.serve;
 
 /**
  * Creates an express or connect-styled router,
@@ -19,15 +25,11 @@ function createRouter(modules) {
   var router = express();
   router.use(bodyParser.json());
 
-  // Map the :entity parameter with an actual serverside entity
-  router.param('entity', entityLoader(modules));
+  // Map the requested entity path with the actual serverside entity
+  router.use('/isomorphine', methodLoader(modules));
 
   // Proxy request pipeline
-  router.post(
-    '/isomorphine/:entity/:method',
-    ctrls.getPayload,
-    ctrls.callEntityMethod,
-    ctrls.serve);
+  router.post('/isomorphine/*', getPayload, callEntityMethod, serve);
 
   return router;
 }
@@ -39,27 +41,39 @@ function createRouter(modules) {
  * @returns {Function}       Middleware function that maps the :entity param
  *                           with the real entity, and exposes it in req.
  */
-function entityLoader(modules) {
-  return function(req, res, next, name) {
-    debug('Looking for isomorphine entity: ' + name);
+function methodLoader(modules) {
+  return function(req, res, next) {
+    if (req.path === '/') return next();
 
-    var method = req.params.method;
+    var path = req.path.substr(1).split('/');
+    var currModule = modules;
+    var isLastIndex, p, method;
 
-    // Sets the entityName and the actual entity in the request object
-    req.entityName = name;
-    req.entity = modules[name];
+    debug('Looking for isomorphine entity in: ' + path.join('.'));
 
-    if (!req.entity) {
-      return next(createError(400, 'Entity ' + name + ' is not registered.'));
+    for (var i = 0, len = path.length; i < len; i++) {
+      isLastIndex = i === (len - 1);
+      p = path[i];
+
+      // Expect a function when last index
+      if (isLastIndex && isFunction(currModule[p])) {
+        method = currModule[p];
+      }
+
+      // Expect an object when not last index
+      else if (!isLastIndex && isObject(currModule[p])) {
+        currModule = currModule[p];
+      }
+
+      // Return a 404 if the entity was not found
+      else {
+        return next(createError(404, 'No method found at this path'));
+      }
     }
 
-    if (!method) {
-      return next(createError(400, 'No method requested for entity ' + name));
-    }
-
-    if (typeof req.entity[method] !== 'function') {
-      return next(createError(400, 'Method ' + method + ' is not a function.'));
-    }
+    // Reference the serverside method in req
+    debug('Entity found');
+    req.serversideMethod = method;
 
     next();
   };

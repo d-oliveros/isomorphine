@@ -1,17 +1,20 @@
-var Proxy = require('./proxy');
 var invariant = require('../util').invariant;
+var isObject = require('../util').isObject;
+var isBoolean = require('../util').isBoolean;
+var createProxiedMethod = require('./createProxiedMethod');
 var debug = require('debug')('isomorphine:injector');
 
 /**
  * Transforms the API surface area of the serverside modules
  * to Proxy instances that will transport the function calls to the server.
  *
- * @warn
- *  Isomorphine determines your entities' methods by scanning the file structure
- *  of the base directory. Every folder represents an entity,
- *  whereas every file in each folder represents an API endpoint, or "route".
+ * Isomorphine determines the server methods by recursively
+ * scanning the  file structure of the base directory.
  *
- * @see  /lib/client/proxy.js
+ * Every file represents a serverside method, and every folder is
+ * recursively scanned to map the server methods.
+ *
+ * @see  /lib/client/createProxiedMethod.js
  *
  * @providesModule clientFactory
  *
@@ -24,35 +27,57 @@ var debug = require('debug')('isomorphine:injector');
  * @return  {Object}  A proxied mirror of the serverside entities.
  */
 module.exports = function proxyFactory(entityMap) {
-  var proxies = {};
-
   invariant(typeof entityMap === 'object', 'Entity map is not an object. '+
     '(Hint: Are you sure you are using the webpack loader?)');
 
-  for (var modName in entityMap) {
-    if (entityMap.hasOwnProperty(modName)) {
-      proxies[modName] = new Proxy(modName, entityMap[modName]);
-    }
-  }
 
-  proxies.config = function(config) {
-    if (typeof config !== 'object' || config === null) {
-      throw new Error('Config is not valid');
+  var config = {
+    port: process.env.ISOMORPHINE_PORT,
+    host: process.env.ISOMORPHINE_HOST
+  };
+
+  var methods = createProxies(config, entityMap);
+
+  methods.config = function configProxies(newConfig) {
+    invariant(isObject(config), 'Config is not valid');
+
+    if (newConfig.host) {
+      config.host = newConfig.host;
     }
 
-    for (var modName in entityMap) {
-      if (proxies.hasOwnProperty(modName)) {
-        if (config.host) {
-          proxies[modName]._host = config.host;
-        }
-        if (config.port) {
-          proxies[modName]._port = config.port;
-        }
-      }
+    if (newConfig.port) {
+      config.port = newConfig.port;
     }
   };
 
-  debug('Loaded entity mirror proxies in the browser: ', proxies);
+  debug('Loaded entity mirror proxies in the browser: ', methods);
+
+  return methods;
+};
+
+/**
+ * Creates proxied methods using a provided map. If parentPath is provided,
+ * it will be used to build the proxied method's endpoint.
+ * @param  {Object}  map         The entity map to use.
+ * @param  {Array}   parentPath  The path to the parent entity.
+ */
+function createProxies(config, map, parentPath) {
+  parentPath = parentPath || [];
+
+  var proxies = {};
+  var path;
+
+  for (var key in map) {
+    if (map.hasOwnProperty(key)) {
+      if (isObject(map[key])) {
+        proxies[key] = createProxies(config, map[key], parentPath.concat([key]));
+      }
+      else if (isBoolean(map[key])) {
+        path = parentPath.join('/') + '/' + key;
+        proxies[key] = createProxiedMethod(config, path);
+      }
+    }
+  }
 
   return proxies;
-};
+}

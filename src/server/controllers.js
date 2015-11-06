@@ -35,12 +35,11 @@ function getPayload(req, res, next) {
  */
 function callEntityMethod(req, res, next) {
   var payload = req.payload;
-  var entityName = req.entityName;
-  var method = req.params.method;
+  var method = req.serversideMethod;
 
   if (req.async) {
-    debug('Transforming callback function');
 
+    debug('Transforming callback function');
     payload[req.clientCallbackIndex] = function(err) {
       if (err) {
         return next(err);
@@ -56,7 +55,7 @@ function callEntityMethod(req, res, next) {
     };
   }
 
-  debug('Calling ' + entityName + '.' + method + '() with arguments:', payload);
+  debug('Calling ' + req.path + ' with arguments:', payload);
 
   var context = {
     req: req,
@@ -67,7 +66,7 @@ function callEntityMethod(req, res, next) {
   // Applies the payload, and provides a context for validation purposes.
   // Caches errors in the method's scope, and sends it to the next error handler.
   try {
-    req.entity[method].apply(context, payload);
+    method.apply(context, payload);
   } catch(err) {
     return next(err);
   }
@@ -85,6 +84,8 @@ function callEntityMethod(req, res, next) {
  * Serves the value in req.entityResponse as a JSON object.
  */
 function serve(req, res) {
-  util.invariant(Array.isArray(res.entityResponse), 'Response values are required.');
+  var responseIsArray = Array.isArray(res.entityResponse);
+  util.invariant(responseIsArray, 'Response values are required.');
+
   res.json({ values: res.entityResponse });
 }

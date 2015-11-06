@@ -1,10 +1,8 @@
 var expect = require('chai').expect;
 var path = require('path');
 var isomorphine = require('../browser');
-var Proxy = require('../src/client/proxy');
+var createProxiedMethod = require('../src/client/createProxiedMethod');
 var apiFactory = require('../src/server/factory');
-var config = require('../config');
-var entityMock = require('./mocks/Entity');
 var mapMock = require('./mocks/map');
 
 describe('Browser', function() {
@@ -12,43 +10,34 @@ describe('Browser', function() {
     it('should map the entity methods to proxy instances', function() {
       var api = isomorphine.proxy(mapMock);
 
-      expect(api.Entity.constructor).to.equal(Proxy);
-      expect(api.EmptyEntity.constructor).to.equal(Proxy);
+      expect(api.index).to.not.be.a('function');
+      expect(api.aSingleMethod).to.be.a('function');
       expect(api.Entity.doSomething).to.be.a('function');
-      expect(api.Entity._host).to.be.a('string');
-      expect(api.Entity._port).to.be.a('string');
-    });
-
-    it('should configure entities', function() {
-      var api = isomorphine.proxy(mapMock);
-
-      var newHost = 'http://127.0.0.1';
-      var newPort = '6685';
-
-      api.config({
-        host: newHost,
-        port: newPort
-      });
-
-      expect(api.Entity._host).to.equal(newHost);
-      expect(api.Entity._port).to.equal(newPort);
+      expect(api.NestedEntity.ChildEntity.childMethod).to.be.a('function');
     });
   });
 
-  describe('Proxy', function() {
+  describe('Proxied Methods', function() {
     it('should proxy an entity method through the rest API', function(done) {
 
+      var config = {
+        host: 'http://127.0.0.1',
+        port: 3000
+      };
+
+      var methodPath = 'Entity/doSomethingAsync';
+
       // Instanciates a new Proxy
-      var Entity = new Proxy('Entity', entityMock);
+      var proxiedMethod = createProxiedMethod(config, methodPath);
 
       // Creates a new API to listen to the clientside proxied function calls
       var api = apiFactory(path.join(__dirname, 'mocks'));
 
-      // Starts the test's API in port 8888
-      var server = api.router.listen(config.port, function(err) {
+      // Starts the test's API server
+      var server = api.router.listen(3000, function(err) {
         if (err) return done(err);
 
-        Entity.doSomethingAsync('something', { another: 'thing' }, function(err, firstRes, secondRes) {
+        proxiedMethod('something', { another: 'thing' }, function(err, firstRes, secondRes) {
           if (err) return done(err);
           expect(firstRes).to.equal('Sweet');
           expect(secondRes).to.deep.equal({ nested: { thing: ['true', 'dat'] }});
@@ -58,24 +47,25 @@ describe('Browser', function() {
     });
 
     it('should proxy an entity method with overridden host and port', function(done) {
-      var newHost = 'http://127.0.0.1';
-      var newPort = 6685;
+      var clientApi = isomorphine.proxy(mapMock);
 
-      // Instanciates a new Proxy
-      var Entity = new Proxy('Entity', entityMock);
+      var config = {
+        host: 'http://127.0.0.1',
+        port: 6689
+      };
 
-      // Override the entity's host and port
-      Entity._host = newHost;
-      Entity._port = newPort;
+      clientApi.config(config);
 
       // Creates a new API to listen to the clientside proxied function calls
-      var api = apiFactory(path.join(__dirname, 'mocks'));
+      // In a real-world example, clientApi and serverApi will be the same code,
+      // reused in an isomorphic fashion.
+      var serverApi = apiFactory(path.join(__dirname, 'mocks'));
 
-      // Starts the test's API in port 6685
-      var server = api.router.listen(newPort, function(err) {
+      // Starts the test's API in port 6689
+      var server = serverApi.router.listen(6689, function(err) {
         if (err) return done(err);
 
-        Entity.doSomethingAsync('something', { another: 'thing' }, function(err, firstRes, secondRes) {
+        clientApi.Entity.doSomethingAsync('something', { another: 'thing' }, function(err, firstRes, secondRes) {
           if (err) return done(err);
           expect(firstRes).to.equal('Sweet');
           expect(secondRes).to.deep.equal({ nested: { thing: ['true', 'dat'] }});

@@ -82,22 +82,25 @@ function getModuleMapSync(dir) {
 
   fs
     .readdirSync(dir)
-    .filter(function(file) {
-      return file.indexOf('.js') < 0;
+    .filter(function(filename) {
+      return filename !== 'index.js';
     })
-    .forEach(function(entityName) {
-      var entityPath = path.join(dir, entityName);
+    .forEach(function(filename) {
+      var filePath = path.join(dir, filename);
+      var Stats = fs.lstatSync(filePath);
+      var isLink = Stats.isSymbolicLink();
+      var isDir = Stats.isDirectory();
+      var isFile = Stats.isFile();
+      var isJS = filename.indexOf('.js') > -1;
 
-      fs
-        .readdirSync(entityPath)
-        .filter(function(file) {
-          return file !== 'index.js' && file.indexOf('.js') > -1;
-        })
-        .forEach(function(file) {
-          var method = file.replace('.js', '');
-          map[entityName] = map[entityName] || {};
-          map[entityName][method] = true;
-        });
+      if (!isLink && isDir) {
+        map[filename] = getModuleMapSync(filePath);
+      }
+
+      else if (!isLink && isFile && isJS) {
+        var entityName = filename.replace('.js', '');
+        map[entityName] = true;
+      }
     });
 
   return map;

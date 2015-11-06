@@ -24,7 +24,7 @@ Isomorphine has only one method: `isomorphine.proxy()`. This method behaves diff
 var isomorphine = require('isomorphine');
 module.exports = isomorphine.proxy();
 ```
-In the server, `isomorphine.proxy()` requires all the modules in the current directory, and creates an express router listening to remote procedure calls (RPCs) on those methods.
+In the server, `isomorphine.proxy()` requires all the files in the current directory, and creates an express router listening to remote procedure calls (RPCs) on those methods. It scans the files recursively, and also includes files inside folders in the current directory.
 
 In the browser, `isomorphine.proxy()` scans the file structure of your modules in the current directory via the webpack loader, and returns an object with a mirror of all the entities mapped to RPCs. You can use these functions the same way as you would use the functions in the server. These modules are _not_ required in the browser.
 
