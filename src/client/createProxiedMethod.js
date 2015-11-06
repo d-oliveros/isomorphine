@@ -58,6 +58,7 @@ function doRequest(endpoint, payload, callback) {
   request
     .post(endpoint)
     .send({ payload: payload })
+    .withCredentials()
     .set('Accept', 'application/json')
     .end(function(err, res) {
       if ((!res || !res.body) && !err) {
