@@ -73,5 +73,59 @@ describe('Browser', function() {
         });
       });
     });
+
+    it('should return a promise if no callback is provided', function(done) {
+      var methodPath = 'Entity/returnPromise';
+
+      var config = {
+        host: 'http://127.0.0.1',
+        port: 3000
+      };
+
+      // Instanciates a new Proxy
+      var proxiedMethod = createProxiedMethod(config, methodPath);
+
+      // Creates a new API to listen to the clientside proxied function calls
+      var api = apiFactory(path.join(__dirname, 'mocks'));
+
+      // Starts the test's API server
+      var server = api.router.listen(3000, function(err) {
+        if (err) return done(err);
+
+        proxiedMethod('something', { another: 'thing' })
+        .then(function(value) {
+          expect(value).to.equal('Cool');
+          server.close(done);
+        })
+        .catch(done);
+      });
+    });
+
+    it('should resolve a value when entity returns a raw value', function(done) {
+      var methodPath = 'Entity/returnValue';
+
+      var config = {
+        host: 'http://127.0.0.1',
+        port: 3000
+      };
+
+      // Instanciates a new Proxy
+      var proxiedMethod = createProxiedMethod(config, methodPath);
+
+      // Creates a new API to listen to the clientside proxied function calls
+      var api = apiFactory(path.join(__dirname, 'mocks'));
+
+      // Starts the test's API server
+      var server = api.router.listen(3000, function(err) {
+        if (err) return done(err);
+
+        proxiedMethod()
+        .then(function(value) {
+          expect(value).to.equal('Sync value');
+          server.close(done);
+        })
+        .catch(done);
+      });
+    });
   });
 });

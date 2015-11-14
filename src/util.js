@@ -9,6 +9,8 @@ exports.serializeCallback = serializeCallback;
 exports.isObject          = isObject;
 exports.isBoolean         = isBoolean;
 exports.isFunction        = isFunction;
+exports.isPromise         = isPromise;
+exports.changeConfig      = changeConfig;
 exports.invariant         = invariant;
 
 /**
@@ -20,18 +22,16 @@ function emptyFunction() {}
  * Returns the first function in an array.
  *
  * @param  {Array}     args  The array to take the function from.
- * @return {Function}        The resulting function. Default: An empty function.
+ * @return {Function}        The resulting function, or null.
  */
 function firstFunction(args) {
-  var func = emptyFunction;
-
-  args.forEach(function(arg) {
-    if (typeof arg === 'function') {
-      func = arg;
+  for (var i = 0, len = args.length; i < len; i++) {
+    if (typeof args[i] === 'function') {
+      return args[i];
     }
-  });
+  }
 
-  return func;
+  return null;
 }
 
 /**
@@ -82,6 +82,34 @@ function isBoolean(obj) {
  */
 function isFunction(obj) {
   return typeof obj === 'function';
+}
+
+/**
+ * Checks if the passed in variable is a promise.
+ * @param  {Mixed}  obj  The variable to check.
+ * @return {Boolean}     True if the variable is a promise.
+ */
+function isPromise(obj) {
+  return typeof obj === 'object' && typeof obj.then === 'function';
+}
+
+/**
+ * Updates a config object
+ * @param  {Object}  oldConfig  Old configuration object
+ * @param  {Object}  newConfig  New configuration object
+ * @return {Undefined}
+ */
+function changeConfig(oldConfig, newConfig) {
+  invariant(isObject(oldConfig), 'Old config is not valid');
+  invariant(isObject(newConfig), 'Config is not valid');
+
+  if (newConfig.host) {
+    oldConfig.host = newConfig.host;
+  }
+
+  if (newConfig.port) {
+    oldConfig.port = newConfig.port;
+  }
 }
 
 /**

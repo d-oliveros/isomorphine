@@ -1,4 +1,5 @@
 var request = require('superagent');
+var promisify = require('promisify-node');
 var debug = require('debug')('isomorphine:createProxiedMethod');
 var util = require('../util');
 
@@ -34,15 +35,20 @@ function proxiedMethod(config, path) {
   // Get the arguments that should be passed to the server
   var payload = Array.prototype.slice.call(arguments).slice(2);
 
-  // Save the callback function for later use
-  var callback = util.firstFunction(payload) || util.emptyFunction;
+    // Save the callback function for later use
+  var callback = util.firstFunction(payload);
 
   // Transform the callback function in the arguments into a special key
   // that will be used in the server to signal the client-side callback call
   payload = util.serializeCallback(payload);
 
   var endpoint = buildEndpoint(config, path);
-  doRequest(endpoint, payload, callback);
+
+  if (callback) {
+    return doRequest(endpoint, payload, callback);
+  } else {
+    return promisify(doRequest)(endpoint, payload);
+  }
 }
 
 /**
@@ -58,7 +64,6 @@ function doRequest(endpoint, payload, callback) {
   request
     .post(endpoint)
     .send({ payload: payload })
-    .withCredentials()
     .set('Accept', 'application/json')
     .end(function(err, res) {
       if ((!res || !res.body) && !err) {
@@ -69,7 +74,9 @@ function doRequest(endpoint, payload, callback) {
       if (err) {
         debug('API request failed.', err);
         console.error(err); // @todo handle errors better
-        callback(err);
+        if (callback) {
+          callback(err);
+        }
         return;
       }
 

@@ -5,6 +5,8 @@ module.exports = {
   Entity: {
     doSomething: true,
     doSomethingAsync: true,
+    returnPromise: true,
+    returnValue: true,
     withContext: true,
     withValidation: true
   },

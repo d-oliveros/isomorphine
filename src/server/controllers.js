@@ -13,18 +13,18 @@ exports.serve            = serve;
  * callback function signal to an actual callback function
  */
 function getPayload(req, res, next) {
-  req.async = false;
+  req.hasCallback = false;
   req.payload = req.body.payload || [];
 
   // Determines if the request is asynchronous or not
   req.payload.forEach(function(arg, i) {
     if (arg === '__clientCallback__') {
-      req.async = true;
+      req.hasCallback = true;
       req.clientCallbackIndex = i;
     }
   });
 
-  debug('Got ' + (req.async ? 'async ' : '') + 'payload: ' +
+  debug('Got payload' + (req.hasCallback ? ' with callback' : '') + ': ' +
     JSON.stringify(req.payload, null, 3));
 
   next();
@@ -37,7 +37,7 @@ function callEntityMethod(req, res, next) {
   var payload = req.payload;
   var method = req.serversideMethod;
 
-  if (req.async) {
+  if (req.hasCallback) {
 
     debug('Transforming callback function');
     payload[req.clientCallbackIndex] = function(err) {
@@ -62,19 +62,31 @@ function callEntityMethod(req, res, next) {
     xhr: true
   };
 
+  var ret;
+
   // Calls the requested serverside method.
   // Applies the payload, and provides a context for validation purposes.
   // Caches errors in the method's scope, and sends it to the next error handler.
   try {
-    method.apply(context, payload);
+    ret = method.apply(context, payload);
   } catch(err) {
     return next(err);
   }
 
+  if (util.isPromise(ret)) {
+    ret.then(function(resolved) {
+      res.entityResponse = [resolved];
+      next();
+    })
+    .catch(function(err) {
+      next(err);
+    });
+  }
+
   // If the request is not expecting the response from the entity,
   // send a generic 'Ok' response.
-  if (!req.async) {
-    res.entityResponse = ['Ok'];
+  else if (!req.hasCallback) {
+    res.entityResponse = [ret];
     debug('Not asynchronous. Returning value: ', res.entityResponse);
     next();
   }

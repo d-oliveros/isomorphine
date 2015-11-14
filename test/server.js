@@ -65,7 +65,7 @@ describe('Server', function() {
         .post('/isomorphine/aSingleMethod')
         .expect(200)
         .expect('Content-Type', /json/)
-        .expect({ values: ['Ok'] })
+        .expect({ values: [null] })
         .end(done);
     });
 
@@ -74,7 +74,7 @@ describe('Server', function() {
         .post('/isomorphine/NestedEntity/ChildEntity/childMethod')
         .expect(200)
         .expect('Content-Type', /json/)
-        .expect({ values: ['Ok'] })
+        .expect({ values: [null] })
         .end(done);
     });
 

@@ -1,7 +1,8 @@
 var fs = require('fs');
 var path = require('path');
 var createRouter = require('./router');
-var util = require('../util');
+var invariant = require('../util').invariant;
+var emptyFunction = require('../util').emptyFunction;
 
 /**
  * Creates an isomorphine endpoint router with entities loaded from 'baseDir'.
@@ -21,7 +22,7 @@ var util = require('../util');
 module.exports = function routerFactory(baseDir) {
   var methods = requireMethods(baseDir);
 
-  util.invariant(!methods.hasOwnProperty('router'),
+  invariant(!methods.hasOwnProperty('router'),
     'You can\'t use an entity with the name "router"');
 
   // Create the API endpoint that will listen for RPCs.
@@ -29,7 +30,7 @@ module.exports = function routerFactory(baseDir) {
 
   // The config method does nothing in the server.
   // It is only used when called from the browser.
-  methods.config = util.emptyFunction;
+  methods.config = emptyFunction;
 
   return methods;
 };

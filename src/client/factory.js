@@ -1,3 +1,4 @@
+var changeConfig = require('../util').changeConfig;
 var invariant = require('../util').invariant;
 var isObject = require('../util').isObject;
 var isBoolean = require('../util').isBoolean;
@@ -38,17 +39,7 @@ module.exports = function proxyFactory(entityMap) {
 
   var methods = createProxies(config, entityMap);
 
-  methods.config = function configProxies(newConfig) {
-    invariant(isObject(config), 'Config is not valid');
-
-    if (newConfig.host) {
-      config.host = newConfig.host;
-    }
-
-    if (newConfig.port) {
-      config.port = newConfig.port;
-    }
-  };
+  methods.config = changeConfig.bind(this, config);
 
   debug('Loaded entity mirror proxies in the browser: ', methods);
 
