@@ -1,4 +1,5 @@
 var debug = require('debug')('isomorphine:util');
+var Promise = global.Promise || require('es6-promise').Promise;
 
 /**
  * @providesModule util
@@ -6,6 +7,7 @@ var debug = require('debug')('isomorphine:util');
 exports.emptyFunction     = emptyFunction;
 exports.firstFunction     = firstFunction;
 exports.serializeCallback = serializeCallback;
+exports.promisify         = promisify;
 exports.isObject          = isObject;
 exports.isBoolean         = isBoolean;
 exports.isFunction        = isFunction;
@@ -55,6 +57,30 @@ function serializeCallback(args) {
 
     return '__clientCallback__';
   });
+}
+
+/**
+ * Transforms a callback-based function flow to a promise-based flow
+ */
+function promisify(func) {
+  return function promisified() {
+    var args = Array.prototype.slice.call(arguments);
+    var context = this;
+
+    return new Promise(function(resolve, reject) {
+      try {
+        func.apply(context, args.concat(function(err, data) {
+          if (err) {
+            return reject(err);
+          }
+
+          resolve(data);
+        }));
+      } catch(err) {
+        reject(err);
+      }
+    });
+  };
 }
 
 /**

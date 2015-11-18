@@ -1,5 +1,4 @@
 var request = require('superagent');
-var promisify = require('promisify-node');
 var debug = require('debug')('isomorphine:createProxiedMethod');
 var util = require('../util');
 
@@ -47,7 +46,7 @@ function proxiedMethod(config, path) {
   if (callback) {
     return doRequest(endpoint, payload, callback);
   } else {
-    return promisify(doRequest)(endpoint, payload);
+    return util.promisify(doRequest)(endpoint, payload);
   }
 }
 

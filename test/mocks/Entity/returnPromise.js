@@ -1,4 +1,4 @@
-var promisify = require('promisify-node');
+var promisify = require('../../../src/util').promisify;
 
 module.exports = promisify(function returnPromise(firstParam, secondParam, callback) {
   setTimeout(function() {
