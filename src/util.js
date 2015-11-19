@@ -11,6 +11,8 @@ exports.promisify         = promisify;
 exports.isObject          = isObject;
 exports.isBoolean         = isBoolean;
 exports.isFunction        = isFunction;
+exports.isES6Function     = isES6Function;
+exports.getES6Function    = getES6Function;
 exports.isPromise         = isPromise;
 exports.changeConfig      = changeConfig;
 exports.invariant         = invariant;
@@ -108,6 +110,31 @@ function isBoolean(obj) {
  */
 function isFunction(obj) {
   return typeof obj === 'function';
+}
+
+/**
+ * Checks if the passed variable is a function,
+ * with support for es6 style imports and exports.
+ * @param  {Mixed}  obj  The variable to check.
+ * @return {Boolean}     True if the variable is a Function,
+ *                       or an object with a function in the property "default".
+ */
+function isES6Function(obj) {
+  return isFunction(obj) || (isObject(obj) && isFunction(obj.default));
+}
+
+/**
+ * Returns `obj` if `obj` is a function, or `obj.default`
+ * if obj is a es6-style default function export.
+ * @param  {Mixed}  obj  The variable to get the function from.
+ * @return {Function}    The function exported from a es6-style module.
+ */
+function getES6Function(obj) {
+  return isFunction(obj)
+    ? obj
+    : isES6Function(obj)
+      ? obj.default
+      : null;
 }
 
 /**

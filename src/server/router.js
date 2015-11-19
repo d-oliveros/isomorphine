@@ -3,7 +3,8 @@ var bodyParser = require('body-parser');
 var createError = require('http-errors');
 var debug = require('debug')('isomorphine:router');
 var isObject = require('../util').isObject;
-var isFunction = require('../util').isFunction;
+var isES6Function = require('../util').isES6Function;
+var getES6Function = require('../util').getES6Function;
 var ctrls = require('./controllers');
 
 var getPayload = ctrls.getPayload;
@@ -56,8 +57,8 @@ function methodLoader(modules) {
       p = path[i];
 
       // Expect a function when last index
-      if (isLastIndex && isFunction(currModule[p])) {
-        method = currModule[p];
+      if (isLastIndex && isES6Function(currModule[p])) {
+        method = getES6Function(currModule[p]);
       }
 
       // Expect an object when not last index
