@@ -1,6 +1,6 @@
 # Isomorphine
 
-Isomorphine is a Webpack loader that lets you require and use server-side entities from the browser, as if you were in the server. It does _not_ expose server-side code.
+Isomorphine lets you require and use server-side entities from the browser, as if you were in the server. It does _not_ expose server-side code.
 
 You don’t need to do HTTP requests and endpoints anymore. You can skip the transport layer, and focus on your application's purpose.
 
