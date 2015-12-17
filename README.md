@@ -11,6 +11,7 @@ You don’t need to do HTTP requests and endpoints anymore. You can skip the tra
 * [How It Works](#how-it-works)
 * [Promise & Async/Await](#promise--es6-support)
 * [RPC Context](#rpc-context)
+* [Webpack](#webpack-configuration)
 * [Examples](#examples)
 * [Caveats](#caveats)
 * [Philosophy](#philosophy)
@@ -233,6 +234,22 @@ export default class MyComponent extends React.Component {
 ```
 
 Remember to check the [barebone example](https://github.com/d-oliveros/isomorphine/tree/master/examples/barebone), and the [isomorphic todoMVC](https://github.com/d-oliveros/isomorphic-todomvc) for full examples.
+
+
+### Webpack Configuration
+
+In order for Isomorphine to work, you need to specify Isomorphine as a webpack loader in your webpack.config.js file:
+
+```js
+module.exports = {
+  entry: {...},
+
+  module: {
+    preLoaders: [{ loaders: ['isomorphine'] }]
+  },
+  ...
+};
+```
 
 
 ### Promise / ES6 Support
