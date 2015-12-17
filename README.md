@@ -33,7 +33,7 @@ npm install isomorphine
 var isomorphine = require('isomorphine');
 
 // Creates an isomorphic entity proxy with browser and server support.
-// This will let you call serverside methods in the browser,
+// This will let you call server-side methods in the browser,
 // without requiring the files contained in those modules.
 var morphine = isomorphine.proxy();
 
@@ -86,7 +86,7 @@ Suppose the following structure:
 /client.js
 ```
 
-Imagine you have a serverside model named `MyUserModel`, and an api with two methods (aka two routes): `create` and `delete`:
+Imagine you have a server-side model named `MyUserModel`, and an api with two methods (aka two routes): `create` and `delete`:
 
 ```js
 // eg. in /api/User/create.js
@@ -106,7 +106,7 @@ module.exports = function deleteUser(uid, callback) {
 }
 ```
 
-To require serverside entities from the browser:
+To require server-side entities from the browser:
 
 ```js
 // in /api/index.js
@@ -121,7 +121,7 @@ var isomorphine = require('isomorphine');
  *
  * Optionally, you can pass the absolute path to the directory you want to proxy.
  *
- * In the browser, Webpack scrans the file structure of the current directory,
+ * In the browser, Webpack scans the file structure of the current directory,
  * and transforms it to an entity map. Each property in the map represents a route
  * to an entity in the server. An entity is a module (a js file) exporting a function
  * via 'module.exports' or 'export default'.
@@ -173,7 +173,7 @@ var User = require('../api').User;
 User.create({
   name:     'Im not in the server',
   headline: 'but I can still use server-side modules as if I were in the server',
-}, function(err, user) { // using callback-based serverside entities
+}, function(err, user) { // using callback-based server-side entities
 
   window.alert('User created');
 
@@ -198,7 +198,7 @@ const user = await User.create({
 
 window.alert('User created');
 
-await User.delete(user._id); // using promise-based serverside entities
+await User.delete(user._id); // using promise-based server-side entities
 
 window.alert('User deleted');
 
@@ -338,7 +338,7 @@ Also go to [Wiselike](https://wiselike.com) to see it running in a production en
 
 ### Caveats
 
-* Your modules have to be required through the isomorphine proxy. You can not require a serverside entity directly. If you do, you will be importing all the serverside code to the browser's bundle, and possibly breaking your app due to browser-incompatible modules, like `fs`, `express`, `mongo`, database drivers, etc.
+* Your modules have to be required through the isomorphine proxy. You can not require a server-side entity directly. If you do, you will be importing all the server-side code to the browser's bundle, and possibly breaking your app due to browser-incompatible modules, like `fs`, `express`, `mongo`, database drivers, etc.
 
 * When a function is called directly from the server (eg when called by a cron job), there's no `this.req` object being passed to the function calls, so you must validate sensitive paths in an earlier stage.
 
@@ -349,7 +349,7 @@ Also go to [Wiselike](https://wiselike.com) to see it running in a production en
 
 Isomorphine lets you abstract the transport layer in a non-obtrusive way, and change how you program web-based distributed applications. It is meant to increase code reusability between the server and the browser, specially in a full-stack javascript environment.
 
-The idea is to encapsulate the transport layer within javascript's native syntax for importing and exporting modules, while providing a middleware interface to let you mount its API the way you want. This massively reduce development times, as you don't have to worry about the routing layer, and focus on your application's purpose.
+The idea is to encapsulate the transport layer within javascript's native syntax for importing and exporting modules, while providing a middleware interface to let you mount its API the way you want. This massively reduces development times, as you don't have to worry about the routing layer, and focus on your application's purpose.
 
 Isomorphine proposes an 'endpoint-less' approach, trying to abstract the barriers between a server and the browser's context.
 
