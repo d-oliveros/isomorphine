@@ -36,16 +36,15 @@ npm install isomorphine
 
 ### Usage
 
-Isomprhine has only one method. `isomorphine.proxy()` exposes the modules in the directory where it was called in a browser-compatible way. It's internal behavior differs depending on whether its being ran in the browser or the server:
+Isomprhine has only one method: `isomorphine.proxy()`.
 
-* When called from the server: `isomorphine.proxy()` requires all files in the current directory (similar to [require-all](https://github.com/felixge/node-require-all)) and also creates an express-based router that will handle remote procedure calls (RPCs) to the methods in these entities.
-
-* When called from the browser: `isomorphine.proxy()` creates a mirror to the server-side entities. The mirror is preprocessed and injected by webpack, so you must [add isomorphine as a webpack loader](#webpack-configuration). No router is created in the browser.
+`isomorphine.proxy()` - Creates an object exposing the modules in the directory where it was called, in a browser-compatible way. Browsers can require server-side entities through this proxy object.
 
 ```js
 var isomorphine = require('isomorphine');
 
-// This will provide the entities in this folder, similar to require-all
+// This will provide the entities in this folder similar to require-all,
+// in a browser-compatible way
 var morphine = isomorphine.proxy();
 
 // You need to manually tell isomorphine where your host is
@@ -54,10 +53,18 @@ morphine.config({
   port: '3000'       // default: '3000'
 });
 
+// You can require this file directly from the browser,
+// and it will let you use server-side entities remotely.
 module.exports = morphine;
 ```
 
-Then you just have to mount the newly created proxy in your connect/express based app:
+The internal behavior of `isomorphine.proxy()` differs depending on whether its being ran in the browser or the server:
+
+* When called from the server: `isomorphine.proxy()` requires all files in the current directory (similar to [require-all](https://github.com/felixge/node-require-all)) and also creates an express-based router that will handle remote procedure calls (RPCs) to the methods in these entities.
+
+* When called from the browser: `isomorphine.proxy()` creates a mirror to the server-side entities. The mirror is preprocessed and injected by webpack, so you must [add isomorphine as a webpack loader](#webpack-configuration). No router is created in the browser, and no server-side modules are actually `require()`'d in the browser.
+
+After creating this isomorphic entity proxy, you just have to mount it in your connect/express based app:
 
 ```js
 // This file is not browser-compatible. It represents your main app server.
@@ -82,7 +89,7 @@ morphine.listen(3000, function() {
 });
 ```
 
-Now you can use any server-side entity through the object created with `isomorphine.proxy()`. Just require this `morphine` object and take anything you need out of it. For example:
+And that's it! Now you can use any server-side entity through the object created with `isomorphine.proxy()`. Just require this `morphine` object from the browser or the server, and take anything you need out of it. For example:
 
 ```js
 // The API surface of 'User' will be the same in the server and the browser,
@@ -169,6 +176,9 @@ Based on this example structure, the object created by `isomorphine.proxy()` is:
   config: [func emptyFunction] // This method does nothing in the server
   router: [func] // this is the RPC API router that must be mounted in your app
 }
+
+// /models/User/create.js and /models/User/delete.js are not actually being
+// required in the browser, so don't worry about browser-incompatible modules
 ```
 
 You can use this fictitious `User` model in the browser by doing this, for example:
