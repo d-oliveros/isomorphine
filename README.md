@@ -19,6 +19,7 @@ You don’t need to do HTTP requests and endpoints anymore. You can skip the tra
 * [Async/Await support](#promise--es6-support)
 * [Security](#rpc-context)
 * [Examples](#examples)
+* [Comparison](#comparison)
 * [Caveats](#caveats)
 * [Philosophy](#philosophy)
 
@@ -412,6 +413,203 @@ If the function is not being called remotely, `this.req` will be null, so make s
 Check the [barebone example](https://github.com/d-oliveros/isomorphine/tree/master/examples/barebone) for a crude example, and the [isomorphic todoMVC](https://github.com/d-oliveros/isomorphic-todomvc) for a full isomorphic react example.
 
 Also go to [Wiselike](https://wiselike.com) to see it running in a production environment, and [ask me anything here!](https://wiselike.com/david)
+
+
+### Comparison
+
+The two examples below achieve the same result. They both create a web server, register a route that returns a user by user ID, starts listening at port 3000, and call this endpoint from the browser.
+
+One example uses isomorphine, while the other one uses the common approach of building an API route, calling a model from a controller, and building a client-side wrapper for data-fetching logic.
+
+##### With isomorphine:
+
+```js
+// in ./api/User/get.js
+
+// Dummy User.get() method
+module.exports = function(id, callback) {
+  var user = {
+    id: id,
+    name: 'Some User'
+  };
+
+  callback(null, user);
+};
+```
+
+```js
+// in ./api/index.js
+var isomoprhine = require('isomorphine');
+
+// make the API entities callable from the browser
+var morphine = isomorphine.proxy();
+
+// start listening for RPC calls
+morphine.router.listen(3000, function() {
+  console.log('Interface listening at port 3000');
+});
+
+module.exports = morphine;
+```
+
+```js
+// in ./client.js
+var User = require('./api').User;
+var userId = 123;
+
+// just use the model and be happy
+User.get(userId, function(err, user) {
+  console.log('User is', user);
+});
+```
+
+
+##### Without isomorphine:
+
+```js
+// in ./api/User/get.js
+
+// Dummy User.get() method
+module.exports = function(id, callback) {
+  var user = {
+    id: id,
+    name: 'Some User'
+  };
+
+  callback(null, user);
+};
+```
+
+```js
+// in ./api/index.js
+var User = require('./User');
+
+var express = require('express');
+var bodyParser = require('body-parser');
+var http = require('http');
+
+var app = express();
+
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
+
+app.get('/api/user/:id', function(req, res, next) {
+  var userId = req.params.id || 123;
+
+  User.get(userId, function(err, user) {
+    if (err) {
+      return next(err);
+    }
+    res.set('Content-Type', 'application/json');
+    res.send(user);
+  });
+});
+
+var server = http.createServer(app);
+server.listen(3000, function() {
+  console.log('Server listening at port 3000');
+});
+```
+
+```js
+// in ./client.js
+var request = require('request');
+var userId = 1;
+
+// unnecesary boilerplate code
+function getUser(id, callback) {
+  request.get(`/api/user/${id}`, function(err, res) {
+    if (err) {
+      return callback(err);
+    }
+    var user = res.data;
+    callback(null, user);
+  });
+}
+
+// gets the user
+getUser(userId, function(err, user) {
+  console.log('User is', user);
+});
+```
+
+
+##### With Isomorphine (condensed):
+
+```js
+var isomoprhine = require('isomorphine');
+var morphine = isomorphine.proxy();
+morphine.router.listen(3000, function() {
+  console.log('Interface listening at port 3000');
+});
+module.exports = morphine;
+var User = require('./api').User;
+var userId = 123;
+User.get(userId, function(err, user) {
+  console.log('User is', user);
+});
+```
+
+
+##### Without Isomorphine (condensed):
+
+```js
+var User = require('./User');
+var express = require('express');
+var bodyParser = require('body-parser');
+var http = require('http');
+var app = express();
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
+app.get('/api/user/:id', function(req, res, next) {
+  var userId = req.params.id || 123;
+  User.get(userId, function(err, user) {
+    if (err) {
+      return next(err);
+    }
+    res.set('Content-Type', 'application/json');
+    res.send(user);
+  });
+});
+var server = http.createServer(app);
+server.listen(3000, function() {
+  console.log('Server listening at port 3000');
+});
+var request = require('request');
+var userId = 1;
+function getUser(id, callback) {
+  request.get(`/api/user/${id}`, function(err, res) {
+    if (err) {
+      return callback(err);
+    }
+    var user = res.data;
+    callback(null, user);
+  });
+}
+getUser(userId, function(err, user) {
+  console.log('User is', user);
+});
+```
+
+This example took 11 lines of code using Isomorphine. Doing this the traditional way took 35 lines. _And its only one route_
+
+If we were to add more CRUD routes to our model, each route would require:
+
+1. A controller
+2. Some request validation
+3. A method in your model
+4. Some wrapper in your client-side application
+
+Plus having to mantain these new components. Multiply this for each route you are currently mantaining, and you'll realize there has to be a better way to streamline your application's development.
+
+With isomorphine, you can just call the server-side model directly. The model is already being supplied to the browser, so you would only require:
+
+1. A new method in your model
+
+No need to re-write the data-fetching layer in the client application, or get parameters out of request object. heck, you don't even need to define and mantain routes. If you need to access the request object for validation purposes or else, you can access it through `this.req` as specified [here](#rpc-context).
+
+_Disclaimer: I'm not saying Isomorphine is the best fit for every case. You should have your routes and middleware in place to handle special actions like auth actions, and should be providing everything you need to correctly authenticate remote calls to your methods. Starting isomorphine directly from `morphine.router.listen()` is not recommended, as Isomorphine is only intended to handle RPCs to server methods. It is not meant to server as a full-blown HTTP server or application stack._
+
 
 
 ### Caveats
