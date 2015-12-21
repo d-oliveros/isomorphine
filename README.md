@@ -1,6 +1,6 @@
 # Isomorphine
 
-Isomorphine lets you use server-side modules in the browser, by providing a minimal webpack-based transport layer, that seemingless lets you access server-side entities without the need to do manual HTTP requests.
+Isomorphine lets you use server-side modules in the browser, by providing a minimal webpack-based transport layer, that lets you access server-side entities seamlessly, without the need to do manual HTTP requests.
 
 Isomorphine works by requiring all the files in the specified folder, and creating an entity map that browsers use to communicate with the server entities.
 
@@ -119,7 +119,7 @@ module.exports = function createUser(username, callback) {
   };
 
   // It doesn't matter how you handle your data layer.
-  // Isomorphine is framwork-agnostic, so you can use anything you want, like
+  // Isomorphine is framework-agnostic, so you can use anything you want, like
   // mongoose, sequelize, direct db drivers, or whatever really.
   db.create(user, callback);
 }
@@ -385,7 +385,7 @@ module.exports = function createUser(username, callback) {
 }
 ```
 
-You can use this context to validate incoming requests. Please note, Isomorphine is unobstrusive and comes with no security middleware by default (other than this mechanism).
+You can use this context to validate incoming requests. Please note, Isomorphine is unobtrusive and comes with no security middleware by default (other than this mechanism).
 
 You *must* implement your own security mechanism yourself in an earlier middleware stage (using cookies or redis sessions or JWT or w/e):
 
@@ -433,7 +433,7 @@ The idea is to encapsulate the transport layer within javascript's native syntax
 
 Isomorphine proposes an 'endpoint-less' approach, trying to abstract the barriers between a server and the browser's context.
 
-The original idea was to use ES6's `Proxy` in the browser, to proxy any function call from any property of any object existing in any file in the server. Unfortunately, I quickly found out that there was no out-of-the-box support for `Proxy` in most of the major browsers. This lead to the idea of using Webpack to pre-generate a map of server-side entities based on filenames. While this work, full support for any type of export will probably come after a more wider adoption of ES6's `Proxy` in the browser.
+The original idea was to use ES6's `Proxy` in the browser, to proxy any function call from any property of any object existing in any file in the server. Unfortunately, I quickly found out that there was no out-of-the-box support for `Proxy` in most of the major browsers. This led to the idea of using Webpack to pre-generate a map of server-side entities based on filenames. While this work, full support for any type of export will probably come after a wider adoption of ES6's `Proxy` in the browser.
 
 
 ### Tests
