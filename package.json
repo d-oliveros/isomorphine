@@ -1,6 +1,6 @@
 {
   "name": "isomorphine",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "description": "Access server-side functions from the browser, as if you were in the server.",
   "main": "index.js",
   "scripts": {

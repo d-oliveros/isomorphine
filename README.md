@@ -76,6 +76,8 @@ app.listen(3000, function() {
 });
 ```
 
+You then need to [add isomorphine as a webpack loader](#webpack-configuration).
+
 And that's it!
 
 Now you can use any server-side entity through the object created with `isomorphine.proxy()`. Just require this `morphine` object from the browser or the server, and take anything you need out of it. For example:
@@ -96,7 +98,7 @@ $('#button').on('click', function() {
 });
 ```
 
-You also need to [add isomorphine as a webpack loader](#webpack-configuration). Remember to read the [caveats](#caveats) for common gotchas.
+Remember to read the [caveats](#caveats) for common gotchas.
 
 
 ### How It Works
