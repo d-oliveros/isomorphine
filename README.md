@@ -1,12 +1,14 @@
 # Isomorphine
 
-Isomorphine is a webpack loader that lets you access server-side modules in the browser, by abstracting the execution context of your modules.
+Isomorphine is a webpack loader that lets you access server-side modules in the browser. It works by injecting a lightweight and unobtrusive rpc routing layer behind the scenes.
 
-When accessing a server-side module from the browser, the module is provided as a mirror of the server-side entity. This mirror will automatically transport any method call to the server, abstracting the routing layer for you. When accessing a module from the server's execution context, the module is resolved as-is, without any mirroring or routing whatsover. The server-side code will _not_ be required in the browser, thus making browser-incompatible entities usable in the browser.
+When requiring a server-side entity from the browser, the module is provided as a mirror of the server-side entity. This mirror will automatically transport any method call to the server, and resolve the results in the browser seamlessly. When accessing a module from the server's execution context, the module is resolved as-is, without any mirroring or routing whatsover.
 
-This lets you share and use server-side code in the browser (for example your database models) and eliminate data fetching boilerplate. It does _not_ expose server-side code. It also provides a [security mechanism](#rpc-context) for remote procedure calls (RPCs), and support promise-based server-side entities.
+You can securely share and use server-side code in the browser (for example your database models) and eliminate data fetching boilerplate. The server-side modules will not be required directly in the browser, so you can require modules containing browser-incompatible libraries.
 
-You don’t need to do HTTP requests and endpoints anymore. You can skip the transport layer, and focus on your application's purpose.
+It does _not_ expose server-side code. It also provides a [security mechanism](#rpc-context) for remote procedure calls (RPCs), and supports promises & async/await.
+
+You don't need to do HTTP requests and endpoints anymore. You can skip your application's routing layer, and focus on your application's purpose.
 
 
 ### Summary
@@ -15,10 +17,10 @@ You don’t need to do HTTP requests and endpoints anymore. You can skip the tra
 * [How It Works](#how-it-works)
 * [Promise support](#promise--es6-support)
 * [Async/Await support](#promise--es6-support)
-* [Security](#rpc-context)
+* [RPC Context & Security](#rpc-context)
 * [Examples](#examples)
-* [Comparison](#comparison)
 * [Caveats](#caveats)
+* [Comparison](#comparison)
 * [Philosophy](#philosophy)
 
 
@@ -34,18 +36,18 @@ npm install isomorphine
 
 ### Usage
 
-Isomprhine has only one method: `isomorphine.proxy()`.
+Isomprhine has only one method: `isomorphine.proxy()`
 
-`isomorphine.proxy()` - Creates an object exposing the modules in the directory where it was called. Similar to [require-all](https://github.com/felixge/node-require-all), but also makes each module browser-compatible. Browsers can require server-side entities through this proxy object.
+`isomorphine.proxy()` - Creates an object exposing the modules in the directory where it was called. Each module must export a function either in `module.exports` or via `export default`. Similar to [require-all](https://github.com/felixge/node-require-all), but also enables each module to be used in the browser.
 
 ```js
 var isomorphine = require('isomorphine');
 
-// This will provide the entities in this folder similar to require-all,
-// in a browser-compatible way
+// This will provide the entities in this folder,
+// similar to require-all but in a browser-compatible way
 var morphine = isomorphine.proxy();
 
-// You need to manually tell isomorphine where your host is
+// You need to tell isomorphine where your host is
 morphine.config({
   host: '127.0.0.1', // default: '127.0.0.1'
   port: '3000'       // default: '3000'
@@ -56,7 +58,7 @@ morphine.config({
 module.exports = morphine;
 ```
 
-After creating this isomorphic entity proxy, you just have to mount it in your connect/express based app:
+After creating this isomorphic entity proxy, you must mount it in your connect/express based app:
 
 ```js
 // This file is not browser-compatible. It represents your main app server.
@@ -74,7 +76,9 @@ app.listen(3000, function() {
 });
 ```
 
-And that's it! Now you can use any server-side entity through the object created with `isomorphine.proxy()`. Just require this `morphine` object from the browser or the server, and take anything you need out of it. For example:
+And that's it!
+
+Now you can use any server-side entity through the object created with `isomorphine.proxy()`. Just require this `morphine` object from the browser or the server, and take anything you need out of it. For example:
 
 ```js
 // The API surface of 'User' will be the same in the server and the browser,
@@ -235,6 +239,7 @@ var morphine = require('./models');
 
 var app = express();
 
+// Mounts the rpc layer middleware. This will enable remote function calls
 app.use(morphine.router);
 
 // you can mount other middleware and routes in the same app
@@ -425,6 +430,17 @@ If the function is not being called remotely, `this.req` will be null, so make s
 Check the [barebone example](https://github.com/d-oliveros/isomorphine/tree/master/examples/barebone) for a crude example, and the [isomorphic todoMVC](https://github.com/d-oliveros/isomorphic-todomvc) for a full isomorphic react example.
 
 Also go to [Wiselike](https://wiselike.com) to see it running in a production environment, and [ask me anything here!](https://wiselike.com/david)
+
+
+### Caveats
+
+* Your files must export a function in `module.exports` (or `export default` if using ES6 syntax) if you want to be able to call them from the browser. There is currently no support for exporting objects yet. If anyone figures out a way to determine the exports of a module without requiring its dependencies I'll be happy to merge the PR :D
+
+* Your modules have to be required through the isomorphine proxy. You can not require a server-side entity directly. If you do, you will be importing all the server-side code to the browser's bundle, and possibly breaking your app due to browser-incompatible modules, like `fs`, `express`, `mongo`, database drivers, etc.
+
+* When a function is called directly from the server (eg when called by a cron job), there's no `this.req` object being passed to the function calls, so you must validate sensitive paths in an earlier stage.
+
+* Also, please note that the file where you create the isomorphic proxy, has to be browser-compatible. Isomorphine works by proxying the methods contained in the specified directory, but the file itself will be required as-is in the browser.
 
 
 ### Comparison
@@ -623,27 +639,13 @@ No need to re-write the data-fetching layer in the client application, or get pa
 _Disclaimer: I'm not saying Isomorphine is the best fit for every case. You should have your routes and middleware in place to handle special actions like auth actions, and should be providing everything you need to correctly authenticate remote calls to your methods. Starting isomorphine directly from `morphine.router.listen()` is not recommended, as Isomorphine is only intended to handle RPCs to server methods. It is not meant to server as a full-blown HTTP server or application stack._
 
 
-
-### Caveats
-
-* Your files should export a function in `module.exports` (or `export default` if using ES6 syntax) if you want to be able to use call them from the browser. There is currently no support for exporting objects yet. If anyone figures out a way to determine the exports of a module without requiring its dependencies I'll be happy to merge the PR :D
-
-* Your modules have to be required through the isomorphine proxy. You can not require a server-side entity directly. If you do, you will be importing all the server-side code to the browser's bundle, and possibly breaking your app due to browser-incompatible modules, like `fs`, `express`, `mongo`, database drivers, etc.
-
-* When a function is called directly from the server (eg when called by a cron job), there's no `this.req` object being passed to the function calls, so you must validate sensitive paths in an earlier stage.
-
-* Also, please note that the file where you create the isomorphic proxy, has to be browser-compatible. Isomorphine works by proxying the methods contained in the specified directory, but the file itself will be required as-is in the browser.
-
-
 ### Philosophy
 
-Isomorphine lets you abstract the transport layer in a non-obtrusive way, and change how you program web-based distributed applications. It is meant to increase code reusability between the server and the browser, specially in a full-stack javascript environment.
+Isomorphine proposes an endpoint-less API approach in an attempt to further abstract the barriers between the server and the browser. It is meant to increase code reusability between the server and the browser, specially in an isomorphic full-stack javascript environment.
 
-The idea is to encapsulate the transport layer within javascript's native syntax for importing and exporting modules, while providing a middleware interface to let you mount its API the way you want. This massively reduces development times, as you don't have to worry about the routing layer, and focus on your application's purpose.
+The idea is to encapsulate the routing layer within javascript's native syntax for importing and exporting modules, while providing a middleware interface to let you mount its RPC handler the way you want. This massively reduces development times, as you don't have to worry about connecting the browser and server together, so you can focus solely in your application's purpose.
 
-Isomorphine proposes an 'endpoint-less' approach, trying to abstract the barriers between a server and the browser's context.
-
-The original idea was to use ES6's `Proxy` in the browser, to proxy any function call from any property of any object existing in any file in the server. Unfortunately, I quickly found out that there was no out-of-the-box support for `Proxy` in most of the major browsers. This led to the idea of using Webpack to pre-generate a map of server-side entities based on filenames. While this work, full support for any type of export will probably come after a wider adoption of ES6's `Proxy` in the browser.
+The original idea was to use ES6's `Proxy` in the browser, to proxy any function call from any property of any object existing in any file in the server. Unfortunately, I quickly found out that there was no out-of-the-box support for `Proxy` in most of the major browsers. This led to the idea of using Webpack to pre-generate a map of server-side entities based on filenames. While this work, full support for any type of export will probably come after a wider adoption of ES6's `Proxy` in the browser, or a more advanced webpack loader.
 
 
 ### Tests
