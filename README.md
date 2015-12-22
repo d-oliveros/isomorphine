@@ -88,7 +88,8 @@ var User = require('./models').User;
 $('#button').on('click', function() {
 
   // When called from the browser, isomorphine will transport this function call
-  // to the server, process the results, and resolve this callback function
+  // to the server, process the results, and resolve this callback function.
+  // You can also run this file in the server, and expect the same behavior.
   User.create({ name: 'someone' }, function(err, user) {
     console.log('Im the browser, and I created a user in the db!');
   });
