@@ -74,6 +74,13 @@ app.use(morphine.router);
 app.listen(3000, function() {
   console.log('Server listening at port 3000');
 });
+
+// Alternatively, if you don't wish to mount isomorphine's middleware in your app,
+// you can just start listening for RPCs by doing:
+var morphine = require('./models');
+morphine.router.listen(3000, function() {
+  console.log('Server listening at port 3000');
+});
 ```
 
 You then need to [add isomorphine as a webpack loader](#webpack-configuration).
@@ -639,7 +646,7 @@ With isomorphine, you can just call the server-side model directly. The model is
 
 No need to re-write the data-fetching layer in the client application, or get parameters out of request object. heck, you don't even need to define and mantain routes. If you need to access the request object for validation purposes or else, you can access it through `this.req` as specified [here](#rpc-context).
 
-_Disclaimer: I'm not saying Isomorphine is the best fit for every case. You should have your routes and middleware in place to handle special actions like auth actions, and should be providing everything you need to correctly authenticate remote calls to your methods. Starting isomorphine directly from `morphine.router.listen()` is not recommended, as Isomorphine is only intended to handle RPCs to server methods. It is not meant to server as a full-blown HTTP server or application stack._
+_Disclaimer: I'm not saying Isomorphine is the best fit for every case. You should have your routes and middleware in place to serve the client and views, and to handle special routes like auth actions, and should be providing everything you need to correctly authenticate remote calls to your methods. Starting isomorphine directly from `morphine.router.listen()` is not recommended, as Isomorphine is only intended to handle RPCs to server methods. It is not meant to server as a full-blown HTTP server or application stack._
 
 
 ### Philosophy
