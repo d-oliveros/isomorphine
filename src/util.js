@@ -157,7 +157,14 @@ function changeConfig(oldConfig, newConfig) {
   invariant(isObject(newConfig), 'Config is not valid');
 
   if (newConfig.host) {
-    oldConfig.host = newConfig.host;
+    var host = newConfig.host;
+    var prefix = '';
+
+    if (host.indexOf('http://') < 0 && host.indexOf('https://') < 0) {
+      prefix += 'http://';
+    }
+
+    oldConfig.host = prefix + newConfig.host;
   }
 
   if (newConfig.port) {

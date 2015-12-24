@@ -2,7 +2,7 @@
 
 Isomorphine is a webpack loader that lets you access server-side modules in the browser. It works by injecting an rpc routing layer behind the scenes.
 
-When requiring a server-side entity from the browser, the module is provided as a mirror of the server-side entity. This mirror will automatically transport any method call to the server, and resolve the results in the browser seamlessly. When accessing a module from the server's execution context, the module is resolved as-is, without any mirroring or routing whatsover.
+When requiring a server-side entity from the browser, the module is provided as a mirror of the server-side entity. This mirror will automatically transport any method call to the server, and resolve the results in the browser seamlessly. When requiring a module from the server's execution context, the module is resolved as-is, without any mirroring or routing whatsover.
 
 You can securely share and use server-side code in the browser (for example your database models) and eliminate data fetching boilerplate. The server-side modules will not be required directly in the browser, so you can require modules containing browser-incompatible libraries.
 
@@ -15,9 +15,8 @@ You don't need to do HTTP requests and endpoints anymore. You can skip your appl
 
 * [Usage](#installation)
 * [How It Works](#how-it-works)
-* [Promise support](#promise--es6-support)
-* [Async/Await support](#promise--es6-support)
-* [RPC Context & Security](#rpc-context)
+* [Promise & Async/Await support](#promise--es6-support)
+* [Security & RPC context](#rpc-context)
 * [Examples](#examples)
 * [Caveats](#caveats)
 * [Comparison](#comparison)
@@ -34,17 +33,23 @@ You don't need to do HTTP requests and endpoints anymore. You can skip your appl
 npm install isomorphine
 ```
 
+Then you must [add isomorphine as a webpack loader](#webpack-configuration).
+
 ### Usage
 
-Isomprhine has only one method: `isomorphine.proxy()`
+Isomorphine has only one method: `isomorphine.proxy()`
 
-`isomorphine.proxy()` - Creates an object exposing the modules in the directory where it was called. Each module must export a function either in `module.exports` or via `export default`. Similar to [require-all](https://github.com/felixge/node-require-all), but also enables each module to be used in the browser.
+`isomorphine.proxy()` - Creates an object exposing the modules in the directory where it was called. Directories are scanned recursively, and each file is represented as a property in the resulting object. This is similar to [require-all](https://github.com/felixge/node-require-all), but also enables each module to be used in the browser.
+
+Each file must export a function either in `module.exports` or via `export default`.
 
 ```js
+// Isomorphine is browser-compatible
+// You can require this file in the browser and the server
 var isomorphine = require('isomorphine');
 
 // This will provide the entities in this folder,
-// similar to require-all but in a browser-compatible way
+// similar to 'require-all' but in a browser-compatible way
 var morphine = isomorphine.proxy();
 
 // You need to tell isomorphine where your host is
@@ -53,37 +58,16 @@ morphine.config({
   port: '3000'       // default: '3000'
 });
 
-// You can require this file directly from the browser,
-// and it will let you use server-side entities remotely.
+// Starts listening for RPCs
+// This will enable remote function calls, and must be run in the server
+morphine.router.listen(3000, function() {
+  console.log('RPC interface listening at port 3000');
+});
+
+// You should require this file directly from the browser,
+// as it will let you use server-side modules located in this folder remotely.
 module.exports = morphine;
 ```
-
-After creating this isomorphic entity proxy, you must mount it in your connect/express based app:
-
-```js
-// This file is not browser-compatible. It represents your main app server.
-var express = require('express');
-
-// suppose the file we defined above is in ./models/index.js
-var morphine = require('./models');
-
-var app = express();
-
-app.use(morphine.router);
-
-app.listen(3000, function() {
-  console.log('Server listening at port 3000');
-});
-
-// Alternatively, if you don't wish to mount isomorphine's middleware in your app,
-// you can just start listening for RPCs by doing:
-var morphine = require('./models');
-morphine.router.listen(3000, function() {
-  console.log('Server listening at port 3000');
-});
-```
-
-You then need to [add isomorphine as a webpack loader](#webpack-configuration).
 
 And that's it!
 
@@ -92,6 +76,9 @@ Now you can use any server-side entity through the object created with `isomorph
 ```js
 // The API surface of 'User' will be the same in the server and the browser,
 // so this should work flawlessly regarding who is running this file.
+
+// Suppose the file we defined above is in ./models/index.js,
+// and the User model is located in ./models/User
 var User = require('./models').User;
 
 $('#button').on('click', function() {
@@ -105,14 +92,33 @@ $('#button').on('click', function() {
 });
 ```
 
-Remember to read the [caveats](#caveats) for common gotchas.
+Alternatively, you can also mount isomorphine's RPC interface in your current express-based app, like this:
+
+```js
+// This file is not browser-compatible. It represents your existing app server
+var express = require('express');
+
+// Suppose the file we defined above is in ./models/index.js
+var morphine = require('./models');
+
+var app = express();
+
+// Mounts the rpc layer middleware. This will enable remote function calls
+app.use(morphine.router);
+
+app.listen(3000, function() {
+  console.log('App listening at port 3000');
+});
+```
+
+Remember to read the [caveats](#caveats) for common gotchas, and the section below for a more in-depth explanation.
 
 
 ### How It Works
 
 * Check the [barebone example](https://github.com/d-oliveros/isomorphine/tree/master/examples/barebone), and the [isomorphic todoMVC](https://github.com/d-oliveros/isomorphic-todomvc) for full examples.
 
-Isomorphine detects server-side entities by scanning the file structure, and building objects whose methods represent files in the server. Each file has to export a function (via `module.exports` or `export default`). Read the [caveats](#caveats) for common gotchas.
+Isomorphine detects server-side entities by scanning the file structure recursively, and building objects whose methods represent files in the server. Each file has to export a function (via `module.exports` or `export default`). Read the [caveats](#caveats) for common gotchas.
 
 The internal behavior of `isomorphine.proxy()` differs depending on whether its being ran in the browser or the server:
 
@@ -120,7 +126,7 @@ The internal behavior of `isomorphine.proxy()` differs depending on whether its 
 
 * When called from the browser: `isomorphine.proxy()` creates a mirror to the server-side entities. The mirror is preprocessed and injected by webpack, so you must [add isomorphine as a webpack loader](#webpack-configuration). No router is created in the browser, and no server-side modules are actually `require()`'d in the browser.
 
-In this example, we will be using a fictitious server-side model called `User`. We will be splitting each model method in its own file.
+In this example, we will be using a fictitious server-side model called `User`. We will be splitting each model method in its own file. Please note that only files that export a function can be used in the browser.
 
 ```js
 // in /models/User/create.js
@@ -286,7 +292,7 @@ It also supports promises and ES6 async/await
 
 ```js
 // in /client.js, running in the browser
-import { User } from '../api';
+import { User } from '../models';
 
 $('#button').on('click', async () => {
 

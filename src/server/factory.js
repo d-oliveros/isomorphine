@@ -20,19 +20,19 @@ var emptyFunction = require('../util').emptyFunction;
  * @return {Object}           Required modules.
  */
 module.exports = function routerFactory(baseDir) {
-  var methods = requireMethods(baseDir);
+  var morphine = requireMethods(baseDir);
 
-  invariant(!methods.hasOwnProperty('router'),
+  invariant(!morphine.hasOwnProperty('router'),
     'You can\'t use an entity with the name "router"');
 
   // Create the API endpoint that will listen for RPCs.
-  methods.router = createRouter(methods);
+  morphine.router = createRouter(morphine);
 
-  // The config method does nothing in the server.
-  // It is only used when called from the browser.
-  methods.config = emptyFunction;
+  // Mocks the `morphine.config` method. The method does nothing in the server.
+  // It is only used in the browser.
+  morphine.config = emptyFunction;
 
-  return methods;
+  return morphine;
 };
 
 /**

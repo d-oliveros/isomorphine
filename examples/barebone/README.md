@@ -1,8 +1,10 @@
 
 # Basic Isomorphic React example
 
+To run this example:
+
 ```
 npm install
-gulp start
-// Go to localhost:8800
+npm start
+// Go to localhost:3000
 ```

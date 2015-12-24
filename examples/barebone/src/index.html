@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Isomorphine Barebone Example</title>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  </head>
+  <body>
+    <div id="container">
+      <h1>Isomorphine Barebone Example</h1>
+
+      <div>
+        <span>Load a user:</span>
+        <input type="text" id="username" placeholder="User name to load" value="myuser85">
+        <button type="button" id="load-user">Load user</button>
+      </div>
+
+      <div>
+        <span>Create a post:</span>
+        <input type="text" id="post-title" placeholder="New Post's title" value="A New Post">
+        <button type="button" id="create-post">Create post</button>
+      </div>
+
+      <div>
+        <h5>Console messages:</h5>
+        <pre id="console"></pre>
+      </div>
+    </div>
+
+    <script src="build/bundle.js"></script>
+  </body>
+</html>

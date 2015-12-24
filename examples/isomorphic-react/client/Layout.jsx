@@ -9,7 +9,7 @@ export default class Layout extends React.Component {
     return (
       <html>
         <head>
-          <title>Isomorphine Basic Example</title>
+          <title>Isomorphine React Example</title>
           <script dangerouslySetInnerHTML={{ __html: `window.__STATE__ = ${state};` }}/>
         </head>
         <body>

@@ -28,3 +28,5 @@ build/Release
 
 # This is stupid
 .DS_Store
+
+examples/barebone/build*

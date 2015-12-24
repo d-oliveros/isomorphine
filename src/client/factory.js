@@ -2,6 +2,7 @@ var changeConfig = require('../util').changeConfig;
 var invariant = require('../util').invariant;
 var isObject = require('../util').isObject;
 var isBoolean = require('../util').isBoolean;
+var emptyFunction = require('../util').emptyFunction;
 var createProxiedMethod = require('./createProxiedMethod');
 var debug = require('debug')('isomorphine:injector');
 
@@ -31,19 +32,24 @@ module.exports = function proxyFactory(entityMap) {
   invariant(typeof entityMap === 'object', 'Entity map is not an object. '+
     '(Hint: Are you sure you are using the webpack loader?)');
 
-
   var config = {
-    port: process.env.ISOMORPHINE_PORT,
-    host: process.env.ISOMORPHINE_HOST
+    port: process.env.ISOMORPHINE_PORT || '3000',
+    host: process.env.ISOMORPHINE_HOST || 'http://localhost'
   };
 
-  var methods = createProxies(config, entityMap);
+  var morphine = createProxies(config, entityMap);
 
-  methods.config = changeConfig.bind(this, config);
+  morphine.config = changeConfig.bind(this, config);
 
-  debug('Loaded entity mirror proxies in the browser: ', methods);
+  // Mocks the `morphine.router` property.
+  // This is only used in the server.
+  morphine.router = {
+    listen: emptyFunction
+  };
 
-  return methods;
+  debug('Loaded entity mirror proxies in the browser: ', morphine);
+
+  return morphine;
 };
 
 /**

@@ -1,0 +1,34 @@
+{
+  "name": "isomorphic-react-example",
+  "version": "1.2.0",
+  "description": "Example of an isomorphic app using Isomorphine, React and Express",
+  "main": "index.js",
+  "scripts": {
+    "start": "gulp start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "isomorphine",
+    "example"
+  ],
+  "author": "David Oliveros",
+  "license": "MIT",
+  "dependencies": {
+    "babel": "^5.8.3",
+    "express": "^4.13.1",
+    "isomorphine": "0.6.0",
+    "react": "^0.13.3"
+  },
+  "devDependencies": {
+    "babel-core": "^5.8.9",
+    "babel-eslint": "^4.0.5",
+    "babel-loader": "^5.3.2",
+    "eslint": "^0.24.1",
+    "eslint-plugin-react": "^3.0.0",
+    "gulp": "^3.9.0",
+    "gulp-task-loader": "^1.2.1",
+    "gulp-nodemon": "^2.0.4",
+    "webpack": "^1.10.5",
+    "webpack-dev-server": "^1.10.1"
+  }
+}
