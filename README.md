@@ -15,9 +15,9 @@ You don't need to do HTTP requests and endpoints anymore. You can skip your appl
 
 * [Usage](#installation)
 * [How It Works](#how-it-works)
+* [Examples](#examples)
 * [Promise & Async/Await support](#promise--es6-support)
 * [Security & RPC context](#rpc-context)
-* [Examples](#examples)
 * [Caveats](#caveats)
 * [Comparison](#comparison)
 * [Philosophy](#philosophy)
@@ -327,9 +327,16 @@ export default class MyComponent extends React.Component {
 }
 ```
 
-Please read the [caveats](#caveats) for common gotchas.
+Please read the [caveats](#caveats) for common gotchas, and the section below for working examples.
 
-Also, you can check the [barebone example](https://github.com/d-oliveros/isomorphine/tree/master/examples/barebone), and the [isomorphic todoMVC](https://github.com/d-oliveros/isomorphic-todomvc) for full examples.
+
+### Examples
+
+* [Barebone](https://github.com/d-oliveros/isomorphine/tree/master/examples/barebone) - Barebone example using express, jquery, webpack.
+* [Isomorphic React](https://github.com/d-oliveros/isomorphine/tree/master/examples/isomorphic-react) - Server-side rendered React example using React, [Baobab](https://github.com/Yomguithereal/baobab), [Babel](https://github.com/babel/babel).
+* [isomorphic TodoMVC](https://github.com/d-oliveros/isomorphic-todomvc) for a full isomorphic TodoMVC react example.
+
+Also go to [Wiselike](https://wiselike.com) to see it running in a production environment, and [ask me anything here!](https://wiselike.com/david)
 
 
 ### Webpack Configuration
@@ -403,8 +410,6 @@ Allowing any API endpoint to be called from the browser, needs a proper validati
 When a call to a server-side function is done from the browser, a special context is passed to the function call. A special `xhr` flag and the request object `req` are passed as the function's context, in `this.xhr` and `this.req`:
 
 ```js
-// In /models/User/create.js
-
 /**
  * When an endpoint is called from the browser, 'this.xhr' will be true,
  * and you'll be able to access the request object in 'this.req'.
@@ -424,8 +429,6 @@ You can use this context to validate incoming requests. Please note, Isomorphine
 You *must* implement your own security mechanism yourself in an earlier middleware stage (using cookies or redis sessions or JWT or w/e):
 
 ```js
-// In /models/User/delete.js
-
 module.exports = function deleteUser(userId, callback) {
 
   // Suppose I have a previous middleware step that adds `isAdmin`
@@ -439,13 +442,6 @@ module.exports = function deleteUser(userId, callback) {
 ```
 
 If the function is not being called remotely, `this.req` will be null, so make sure to validate `this.xhr` before trying to do something with the request object `this.req`.
-
-
-### Examples
-
-Check the [barebone example](https://github.com/d-oliveros/isomorphine/tree/master/examples/barebone) for a crude example, and the [isomorphic todoMVC](https://github.com/d-oliveros/isomorphic-todomvc) for a full isomorphic react example.
-
-Also go to [Wiselike](https://wiselike.com) to see it running in a production environment, and [ask me anything here!](https://wiselike.com/david)
 
 
 ### Caveats
