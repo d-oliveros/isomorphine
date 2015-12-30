@@ -32,11 +32,7 @@ module.exports = function proxyFactory(entityMap) {
   invariant(typeof entityMap === 'object', 'Entity map is not an object. '+
     '(Hint: Are you sure you are using the webpack loader?)');
 
-  var config = {
-    port: process.env.ISOMORPHINE_PORT || '3000',
-    host: process.env.ISOMORPHINE_HOST || 'http://localhost'
-  };
-
+  var config = getConfig();
   var morphine = createProxies(config, entityMap);
 
   morphine.config = changeConfig.bind(this, config);
@@ -78,4 +74,32 @@ function createProxies(config, map, parentPath) {
   }
 
   return proxies;
+}
+
+/**
+ * Gets the default configuration based on environmental variables
+ * @return {Object}  Initial config
+ */
+function getConfig() {
+  var defaultLocation = {
+    port: '80',
+    hostname: 'localhost',
+    protocol: 'http:'
+  };
+
+  var wLocation = (global.location && global.location.port && global.location.protocol)
+    ? global.location
+    : defaultLocation;
+
+  var location = {
+    port: wLocation.port || '80',
+    host: wLocation.protocol + '//' + wLocation.hostname
+  };
+
+  var config = {
+    port: process.env.ISOMORPHINE_PORT || location.port,
+    host: process.env.ISOMORPHINE_HOST || location.host
+  };
+
+  return config;
 }
