@@ -16,7 +16,7 @@ You don't need to do HTTP requests and endpoints anymore. You can skip your appl
 * [Usage](#installation)
 * [How It Works](#how-it-works)
 * [Examples](#examples)
-* [Promise & Async/Await support](#promise--es6-support)
+* [Promise & Async/Await support](#promise--es7-support)
 * [Security & RPC context](#rpc-context)
 * [Caveats](#caveats)
 * [Comparison](#comparison)
@@ -39,67 +39,43 @@ Then you must [add isomorphine as a webpack loader](#webpack-configuration).
 
 Isomorphine has only one method: `isomorphine.proxy()`
 
-`isomorphine.proxy()` - Creates an object exposing the modules in the directory where it was called. Directories are scanned recursively, and each file is represented as a property in the resulting object. This is similar to [require-all](https://github.com/felixge/node-require-all), but also enables each module to be used in the browser.
-
-Each file must export a function either in `module.exports` or via `export default`.
+`isomorphine.proxy()` - Creates an object exposing the modules in the directory where it was called. This is similar to [require-all](https://github.com/felixge/node-require-all), but also enables each module to be used in the browser.
 
 ```js
-// Isomorphine is browser-compatible
-// You can require this file in the browser and the server
 var isomorphine = require('isomorphine');
 
 // This will provide the entities in this folder,
-// similar to 'require-all' but in a browser-compatible way
-var morphine = isomorphine.proxy();
-
-// You need to tell isomorphine where your host is
-morphine.config({
-  host: '127.0.0.1', // default: '127.0.0.1'
-  port: '3000'       // default: '3000'
-});
-
-// Starts listening for RPCs
-// This will enable remote function calls, and must be run in the server
-morphine.router.listen(3000, function() {
-  console.log('RPC interface listening at port 3000');
-});
-
-// You should require this file directly from the browser,
-// as it will let you use server-side modules located in this folder remotely.
-module.exports = morphine;
+// similar to 'require-all' but in a browser-compatible way.
+module.exports = isomorphine.proxy();
 ```
 
-And that's it!
+Each file in the current directory represents a property in the resulting object. Each file must export a function either in `module.exports` or via `export default`. Directories are scanned recursively (See [require-all](https://github.com/felixge/node-require-all)). When using these modules from the browser through isomorphine, function calls will be proxied to the server.
 
-Now you can use any server-side entity through the object created with `isomorphine.proxy()`. Just require this `morphine` object from the browser or the server, and take anything you need out of it. For example:
+This will let you use any server-side entity remotely, through the object created with `isomorphine.proxy()`. Just require this `morphine` object from the browser or the server, and take anything you need out of it. For example:
 
 ```js
-// The API surface of 'User' will be the same in the server and the browser,
-// so this should work flawlessly regarding who is running this file.
-
-// Suppose the file we defined above is in ./models/index.js,
-// and the User model is located in ./models/User
+/**
+ * Suppose the file we defined above is in ./models/index.js,
+ * and the User model is located in ./models/User.
+ */
 var User = require('./models').User;
 
 $('#button').on('click', function() {
 
   // When called from the browser, isomorphine will transport this function call
   // to the server, process the results, and resolve this callback function.
-  // You can also run this file in the server, and expect the same behavior.
+  // When called from the server, the function is called directly.
   User.create({ name: 'someone' }, function(err, user) {
     console.log('Im the browser, and I created a user in the db!');
   });
 });
 ```
 
-Alternatively, you can also mount isomorphine's RPC interface in your current express-based app, like this:
+You also need to mount isomorphine's RPC interface on your current express-based app, by doing:
 
 ```js
-// This file is not browser-compatible. It represents your existing app server
 var express = require('express');
-
-// Suppose the file we defined above is in ./models/index.js
-var morphine = require('./models');
+var morphine = require('./models'); // Suppose this is the file we created above
 
 var app = express();
 
@@ -111,12 +87,34 @@ app.listen(3000, function() {
 });
 ```
 
+Alternatively, you can start isomorphine's router as a stand-alone http server by doing:
+
+```js
+var morphine = require('./models'); // Suppose this is the file we created above
+
+// This will enable remote function calls, and must be run in the server
+morphine.router.listen(3000, function() {
+  console.log('RPC interface listening at port 3000');
+});
+```
+
+By default, isomorphine will make the remote procedure calls to the same host and port of the client's current `window.location`. To manually specify the host and port of your API server, you can do:
+
+```js
+var morphine = isomorphine.proxy();
+
+morphine.config({
+  host: 'api.mysite.com', // default is the current browser location hostname
+  port: '3000'            // default is the current browser location port
+});
+```
+
 Remember to read the [caveats](#caveats) for common gotchas, and the section below for a more in-depth explanation.
 
 
 ### How It Works
 
-* Check the [barebone example](https://github.com/d-oliveros/isomorphine/tree/master/examples/barebone), and the [isomorphic todoMVC](https://github.com/d-oliveros/isomorphic-todomvc) for full examples.
+* Check the [barebone example](https://github.com/d-oliveros/isomorphine/tree/master/examples/barebone), and the [isomorphic todoMVC](https://github.com/d-oliveros/isomorphic-todomvc) for [full working examples](#examples).
 
 Isomorphine detects server-side entities by scanning the file structure recursively, and building objects whose methods represent files in the server. Each file has to export a function (via `module.exports` or `export default`). Read the [caveats](#caveats) for common gotchas.
 
@@ -126,7 +124,7 @@ The internal behavior of `isomorphine.proxy()` differs depending on whether its 
 
 * When called from the browser: `isomorphine.proxy()` creates a mirror to the server-side entities. The mirror is preprocessed and injected by webpack, so you must [add isomorphine as a webpack loader](#webpack-configuration). No router is created in the browser, and no server-side modules are actually `require()`'d in the browser.
 
-In this example, we will be using a fictitious server-side model called `User`. We will be splitting each model method in its own file. Please note that only files that export a function can be used in the browser.
+In this example, we will be using a fictitious server-side model called `User`, written in vanilla ES5. We will be splitting each model method in its own file. Please note that only files that export a function can be used in the browser. Promises and ES7 async/await are [also supported](#promise--es7-support).
 
 ```js
 // in /models/User/create.js
@@ -160,12 +158,10 @@ To make the these functions available in the browser, you have to create an isom
 
 ```js
 // in /models/index.js
-
 var isomorphine = require('isomorphine');
-var morphine = isomorphine.proxy();
 
 // This will be our main isomorphic gateway to this folder
-module.exports = morphine;
+module.exports = isomorphine.proxy();
 ```
 
 We are calling `isomorphine.proxy()` in the `index.js` file of the `./models` folder, thus providing all the models in the `./models` folder to the browser, as mirror entity maps.
@@ -288,7 +284,7 @@ User.edit(user._id, { name: 'newName' }, 'moreargs', (err, editedUser, stats) =>
 
 **Your server's files will _not_ be exposed in the browser, nor they will get added to the bundled file.**
 
-It also supports promises and ES6 async/await
+It also supports promises and ES7 async/await
 
 ```js
 // in /client.js, running in the browser
@@ -355,7 +351,7 @@ module.exports = {
 ```
 
 
-### Promise / ES6 Support
+### Promise / ES7 Support
 
 Isomorphine supports promises, async/await, and callback-based functions.
 
@@ -379,7 +375,7 @@ module.exports = function readSomeFile() {
 ```
 
 ```js
-// ES6 async/await support
+// ES7 async/await support
 export default async function getUser() {
   const user = await MyUserModel.find({ _id: 123 });
 
