@@ -1,7 +1,7 @@
 {
   "name": "isomorphine",
-  "version": "0.8.11",
-  "description": "Access server-side modules from the browser, rpc-style.",
+  "version": "0.8.12",
+  "description": "Access server-side modules from the browser, remotely.",
   "main": "index.js",
   "scripts": {
     "test": "node node_modules/.bin/mocha"

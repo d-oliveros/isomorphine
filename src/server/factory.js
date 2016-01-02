@@ -1,8 +1,12 @@
 var fs = require('fs');
 var path = require('path');
 var createRouter = require('./router');
-var invariant = require('../util').invariant;
-var emptyFunction = require('../util').emptyFunction;
+var util = require('../util');
+
+var invariant = util.invariant;
+var emptyFunction = util.emptyFunction;
+var isObject = util.isObject;
+var isFunction = util.isFunction;
 
 /**
  * Creates an isomorphine endpoint router with entities loaded from 'baseDir'.
@@ -66,6 +70,13 @@ function requireMethods(dir) {
       else if (!isLink && isFile && isJS) {
         var entityName = filename.replace('.js', '');
         modules[entityName] = require(filePath);
+
+        var hasES6Default = isObject(modules[entityName])
+          && isFunction(modules[entityName].default);
+
+        if (hasES6Default) {
+          modules[entityName] = modules[entityName].default;
+        }
       }
     });
 

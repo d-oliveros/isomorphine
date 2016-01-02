@@ -19,8 +19,9 @@ describe('Server', function() {
       // Methods that were required by isomorphine
       expect(api.aSingleMethod).to.be.an('function');
 
-      expect(api.Entity).to.be.an('object')
-        .with.property('doSomething').that.is.a('function');
+      // Support for es6 "export default"
+      expect(api.NestedEntity).to.be.an('object')
+        .with.property('aMethod').that.is.a('function');
 
       expect(api.Entity.doSomething()).to.equal('You got it');
     });
