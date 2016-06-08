@@ -59,7 +59,9 @@ function callEntityMethod(req, res, next) {
 
   var context = {
     req: req,
-    xhr: true
+    xhr: true,
+    setCookie: res.cookie.bind(res),
+    clearCookie: res.clearCookie.bind(res)
   };
 
   var ret;
