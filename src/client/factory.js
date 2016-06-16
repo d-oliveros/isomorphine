@@ -93,9 +93,9 @@ function createProxies(config, map, parentPath) {
  */
 function getConfigFromBrowser() {
   var defaultLocation = {
-    port: '80',
-    hostname: 'localhost',
-    protocol: 'http:'
+    port: window.location.port,
+    hostname: window.location.hostname,
+    protocol: window.location.protocol
   };
 
   var wLocation = (global.location && global.location.port)
