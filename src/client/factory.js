@@ -32,10 +32,21 @@ module.exports = function proxyFactory(entityMap) {
   invariant(typeof entityMap === 'object', 'Entity map is not an object. '+
     '(Hint: Are you sure you are using the webpack loader?)');
 
-  var config = getConfig();
-  var morphine = createProxies(config, entityMap);
+  var params = getConfigFromBrowser();
+  var morphine = createProxies(params, entityMap);
 
-  morphine.config = changeConfig.bind(this, config);
+  morphine.config = changeConfig.bind(this, params);
+
+  morphine.addErrorHandler = function(handler) {
+    params.errorHandlers.push(handler);
+  };
+
+  morphine.removeErrorHandler = function(handler) {
+    var index = params.errorHandlers.indexOf(handler);
+    if (index > -1) {
+      params.errorHandlers.splice(index, 1);
+    }
+  };
 
   // Mocks the `morphine.router` property.
   // This is only used in the server.
@@ -80,25 +91,26 @@ function createProxies(config, map, parentPath) {
  * Gets the default configuration based on environmental variables
  * @return {Object}  Initial config
  */
-function getConfig() {
+function getConfigFromBrowser() {
   var defaultLocation = {
     port: '80',
     hostname: 'localhost',
     protocol: 'http:'
   };
 
-  var wLocation = (global.location && global.location.port && global.location.protocol)
+  var wLocation = (global.location && global.location.port)
     ? global.location
     : defaultLocation;
 
   var location = {
-    port: wLocation.port || '80',
+    port: wLocation.port,
     host: wLocation.protocol + '//' + wLocation.hostname
   };
 
   var config = {
-    port: process.env.ISOMORPHINE_PORT || location.port,
-    host: process.env.ISOMORPHINE_HOST || location.host
+    port: location.port,
+    host: location.host,
+    errorHandlers: []
   };
 
   return config;

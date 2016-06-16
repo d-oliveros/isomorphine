@@ -1,6 +1,6 @@
 {
   "name": "isomorphine",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Access server-side modules from the browser, remotely.",
   "main": "index.js",
   "scripts": {

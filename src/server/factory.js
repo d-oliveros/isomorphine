@@ -35,6 +35,8 @@ module.exports = function routerFactory(baseDir) {
   // Mocks the `morphine.config` method. The method does nothing in the server.
   // It is only used in the browser.
   morphine.config = emptyFunction;
+  morphine.addErrorHandler = emptyFunction;
+  morphine.removeErrorHandler = emptyFunction;
 
   return morphine;
 };

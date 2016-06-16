@@ -7,7 +7,7 @@ var util = require('../util');
  * Serializes the parameters sent in the function's call,
  * and sends a POST request to isomorphine's endpoint in the server.
  *
- * @param  {Object}  config  The server's configuration object (Host + port).
+ * @param  {Object}  params  The server's configuration and error handlers.
  * @param  {Object}  path    The path to the serverside method to be called.
  *
  * @return {Function}
@@ -17,19 +17,19 @@ var util = require('../util');
  *
  * @providesModule createProxiedMethod
  */
-module.exports = function createProxiedMethod(config, path) {
+module.exports = function createProxiedMethod(params, path) {
   debug('Creating a new proxied method with path "' + path + '"');
-  return proxiedMethod.bind({}, config, path);
+  return proxiedMethod.bind({}, params, path);
 };
 
 /**
  * Serializes the parameters sent in the function's call,
  * and sends a POST request to isomorphine's endpoint in the server.
  *
- * @param  {Object}  config  The server's configuration object (Host + port).
+ * @param  {Object}  params  The server's configuration and error handlers.
  * @param  {Object}  path    The path to the serverside method to be called.
  */
-function proxiedMethod(config, path) {
+function proxiedMethod(params, path) {
 
   // Get the arguments that should be passed to the server
   var payload = Array.prototype.slice.call(arguments).slice(2);
@@ -41,12 +41,12 @@ function proxiedMethod(config, path) {
   // that will be used in the server to signal the client-side callback call
   payload = util.serializeCallback(payload);
 
-  var endpoint = buildEndpoint(config, path);
+  var endpoint = buildEndpoint(params, path);
 
   if (callback) {
-    return doRequest(endpoint, payload, callback);
+    return doRequest(endpoint, payload, params, callback);
   } else {
-    return util.promisify(doRequest)(endpoint, payload);
+    return util.promisify(doRequest)(endpoint, payload, params);
   }
 }
 
@@ -55,9 +55,10 @@ function proxiedMethod(config, path) {
  *
  * @param  {String}   endpoint  The endpoint to request.
  * @param  {Array}    payload   The arguments to send.
+ * @param  {Object}   params    The server's configuration and error handlers.
  * @param  {Function} callback  The callback function to call afterwards.
  */
-function doRequest(endpoint, payload, callback) {
+function doRequest(endpoint, payload, params, callback) {
   debug('Calling API endpoint: ' + endpoint + '.');
 
   request
@@ -71,18 +72,14 @@ function doRequest(endpoint, payload, callback) {
       }
 
       if (err) {
-        debug('API request failed.', err);
-        console.error(err); // @todo handle errors better
-        if (callback) {
-          callback(err);
-        }
-        return;
+        return handleError(err, params, callback);
       }
 
       var values = res.body.values;
 
       if (!values || values.constructor !== Array) {
-        return callback(new Error('Fetched payload is not an array.'));
+        err = new Error('Fetched payload is not an array.');
+        return handleError(err, params, callback);
       }
 
       debug('Resolving callback with ' + JSON.stringify(values, null, 3));
@@ -92,6 +89,21 @@ function doRequest(endpoint, payload, callback) {
 
       callback.apply(this, values);
     });
+}
+
+function handleError(err, params, callback) {
+  util.invariant(typeof params === 'object', 'Params is required');
+
+  debug('API request failed.', err);
+  if (params.errorHandlers instanceof Array) {
+    params.errorHandlers.forEach(function(handler) {
+      handler(err);
+    });
+  }
+
+  if (typeof callback === 'function') {
+    callback(err);
+  }
 }
 
 /**
