@@ -98,7 +98,7 @@ function getConfigFromBrowser() {
     protocol: 'http:'
   };
 
-  var wLocation = (global.location && global.location.port)
+  var wLocation = (global.location)
     ? global.location
     : defaultLocation;
 
