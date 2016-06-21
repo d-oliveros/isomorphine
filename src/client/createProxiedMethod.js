@@ -118,7 +118,6 @@ function buildEndpoint(config, path) {
   var port = config.port;
 
   if (!host) throw new Error('No host is specified in proxied method config');
-  if (!port) throw new Error('No port is specified in proxied method config');
 
   var base = host + (port ? ':' + port : '');
   var fullpath = '/isomorphine/' + path;
