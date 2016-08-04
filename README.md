@@ -1,6 +1,6 @@
 # Isomorphine
 
-Isomorphine is a webpack loader that lets you access server-side modules in the browser. It works by injecting an rpc routing layer behind the scenes.
+Isomorphine is a webpack loader that lets you access server-side modules in the browser. It works by injecting an rpc routing layer behind the scenes. This lets you require and run server-side code from the browser, without doing AJAX requests or express routes.
 
 When requiring a server-side entity from the browser, the module is provided as a mirror of the server-side entity. This mirror will automatically transport any method call to the server, and resolve the results in the browser seamlessly. When requiring a module from the server's execution context, the module is resolved as-is, without any mirroring or routing whatsover.
 
