@@ -350,6 +350,8 @@ module.exports = {
 };
 ```
 
+For instructions and a usage guide, please read [Usage](#usage)
+
 
 ### Promise / ES7 Support
 
